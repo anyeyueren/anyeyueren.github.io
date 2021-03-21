@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>Self-discipline</title>
+  <title>Welcome to my world!</title>
   
-  <subtitle>Self-discipline makes me strong</subtitle>
+  
   <link href="https://anyeyueren.gitee.io/atom.xml" rel="self"/>
   
   <link href="https://anyeyueren.gitee.io/"/>
@@ -18,8 +18,8 @@
   
   <entry>
     <title>Hello World</title>
-    <link href="https://anyeyueren.gitee.io/2021/03/20/hello-world/"/>
-    <id>https://anyeyueren.gitee.io/2021/03/20/hello-world/</id>
+    <link href="https://anyeyueren.gitee.io/2021/03/20/index/"/>
+    <id>https://anyeyueren.gitee.io/2021/03/20/index/</id>
     <published>2021-03-20T12:19:47.002Z</published>
     <updated>2021-03-20T12:19:47.002Z</updated>
     
