@@ -2,6 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://anyeyueren.gitee.io/music/index.html</loc>
+    
+    <lastmod>2021-03-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://anyeyueren.gitee.io/link/index.html</loc>
+    
+    <lastmod>2021-03-21</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://anyeyueren.gitee.io/categories/index.html</loc>
+    
+    <lastmod>2021-03-21</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://anyeyueren.gitee.io/tags/index.html</loc>
+    
+    <lastmod>2021-03-21</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://anyeyueren.gitee.io/2021/03/20/index/</loc>
     
     <lastmod>2021-03-20</lastmod>
@@ -11,7 +39,7 @@
 
   <url>
     <loc>https://anyeyueren.gitee.io/</loc>
-    <lastmod>2021-03-21</lastmod>
+    <lastmod>2021-03-22</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
