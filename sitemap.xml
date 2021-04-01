@@ -2,9 +2,9 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://anyeyueren.gitee.io/2021/03/28/null/</loc>
+    <loc>https://anyeyueren.gitee.io/2021/04/01/null/</loc>
     
-    <lastmod>2021-03-31</lastmod>
+    <lastmod>2021-04-01</lastmod>
     
   </url>
   
@@ -43,17 +43,10 @@
     
   </url>
   
-  <url>
-    <loc>https://anyeyueren.gitee.io/2021/03/20/index/</loc>
-    
-    <lastmod>2021-03-20</lastmod>
-    
-  </url>
-  
 
   <url>
     <loc>https://anyeyueren.gitee.io/</loc>
-    <lastmod>2021-03-31</lastmod>
+    <lastmod>2021-04-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
