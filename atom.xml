@@ -3,11 +3,11 @@
   <title>Welcome to my world!</title>
   
   
-  <link href="https://anyeyueren.gitee.io/atom.xml" rel="self"/>
+  <link href="http://anyeyueren.top/atom.xml" rel="self"/>
   
-  <link href="https://anyeyueren.gitee.io/"/>
+  <link href="http://anyeyueren.top/"/>
   <updated>2021-04-01T14:32:54.255Z</updated>
-  <id>https://anyeyueren.gitee.io/</id>
+  <id>http://anyeyueren.top/</id>
   
   <author>
     <name>anyeyueren</name>
@@ -18,8 +18,8 @@
   
   <entry>
     <title>Makefile学习笔记(二)</title>
-    <link href="https://anyeyueren.gitee.io/2021/04/01/null/"/>
-    <id>https://anyeyueren.gitee.io/2021/04/01/null/</id>
+    <link href="http://anyeyueren.top/2021/04/01/null/"/>
+    <id>http://anyeyueren.top/2021/04/01/null/</id>
     <published>2021-04-01T13:49:35.000Z</published>
     <updated>2021-04-01T14:32:54.255Z</updated>
     
@@ -38,8 +38,8 @@
   
   <entry>
     <title>Makefile学习笔记(一)</title>
-    <link href="https://anyeyueren.gitee.io/2021/03/23/null/"/>
-    <id>https://anyeyueren.gitee.io/2021/03/23/null/</id>
+    <link href="http://anyeyueren.top/2021/03/23/null/"/>
+    <id>http://anyeyueren.top/2021/03/23/null/</id>
     <published>2021-03-23T15:00:44.000Z</published>
     <updated>2021-03-28T14:34:57.731Z</updated>
     
