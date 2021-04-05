@@ -1361,7 +1361,7 @@ input::placeholder {
   z-index: -999;
   width: 100%;
   height: 100%;
-  background: url(https://gitee.com/anyeyueren/myimg/raw/master/img/20210321230831.jpg);
+  background: url(https://cdn.jsdelivr.net/gh/anyeyueren/PictureCollection/theme1/20210405202248.jpg);
   background-attachment: local;
   background-position: center;
   -webkit-background-size: cover;
@@ -2422,7 +2422,13 @@ blockquote footer cite:before {
   border-radius: 8px 0 0 8px;
 }
 #recent-posts > .recent-post-item .right_radius {
-  border-radius: 8px 0 0 8px;
+  -webkit-box-ordinal-group: 2;
+  -moz-box-ordinal-group: 2;
+  -o-box-ordinal-group: 2;
+  -ms-flex-order: 2;
+  -webkit-order: 2;
+  order: 2;
+  border-radius: 0 8px 8px 0;
 }
 #recent-posts > .recent-post-item.ads-wrap {
   display: block !important;
