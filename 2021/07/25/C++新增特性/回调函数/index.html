@@ -1,0 +1,223 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>C语言中的函数 | Barret Blog</title><meta name="keywords" content="IT"><meta name="author" content="Barret"><meta name="copyright" content="Barret"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="函数指针​    C语言中函数拥有三要素：名称、参数、返回值。C语言的函数有自己特定的类型。函数指针是用于指向函数入口的指针，函数名就是函数体入口地址。  函数指针的定义方法： (1)  通过函数类型定义函数指针： FuncType pointer;* (2)  直接定义：          type (*pointer)(parameter list); ​">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C语言中的函数">
+<meta property="og:url" content="http://example.com/2021/07/25/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0/index.html">
+<meta property="og:site_name" content="Barret Blog">
+<meta property="og:description" content="函数指针​    C语言中函数拥有三要素：名称、参数、返回值。C语言的函数有自己特定的类型。函数指针是用于指向函数入口的指针，函数名就是函数体入口地址。  函数指针的定义方法： (1)  通过函数类型定义函数指针： FuncType pointer;* (2)  直接定义：          type (*pointer)(parameter list); ​">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650272949&t=18f99d2e597ef4e5080a0e7cdc68b6e1">
+<meta property="article:published_time" content="2021-07-24T22:04:16.000Z">
+<meta property="article:modified_time" content="2021-08-01T07:38:15.614Z">
+<meta property="article:author" content="Barret">
+<meta property="article:tag" content="IT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650272949&t=18f99d2e597ef4e5080a0e7cdc68b6e1"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2021/07/25/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":50},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'C语言中的函数',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-08-01 15:38:15'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.0.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F14206928472%2F1000.jpg&amp;refer=http%3A%2F%2Finews.gtimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650157497&amp;t=70dfbdc4919a4e744f090628aaf5059d" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><div class="data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a></div><div class="data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a></div><div class="data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Barret Blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">C语言中的函数</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-07-24T22:04:16.000Z" title="发表于 2021-07-25 06:04:16">2021-07-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-08-01T07:38:15.614Z" title="更新于 2021-08-01 15:38:15">2021-08-01</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="C语言中的函数"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="函数指针"><a href="#函数指针" class="headerlink" title="函数指针"></a>函数指针</h1><p>​    C语言中函数拥有三要素：名称、参数、返回值。C语言的函数有自己特定的类型。函数指针是用于指向函数入口的指针，<strong>函数名就是函数体入口地址</strong>。</p>
+<blockquote>
+<p>函数指针的定义方法：</p>
+<p>(1)  通过函数类型定义函数指针： <em><em>FuncType</em> pointer;</em>*</p>
+<p>(2)  直接定义：          <strong>type (*pointer)(parameter list);</strong></p>
+<p>​                               pointer： 函数指针变量名</p>
+<p>​                               type:         指向函数的返回值类型</p>
+<p>​                              parameter list： 指向函数的参数类型列表</p>
+<p>&#x3D;&#x3D;&gt; 通过typedef为函数类型重命名：   <strong>typedef     type      name(parameter   list)</strong></p>
+</blockquote>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">add</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;	</span><br><span class="line">    <span class="keyword">return</span> a+b;    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 定义一个函数类型</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="type">int</span> c;</span><br><span class="line">	<span class="built_in">add</span>(<span class="number">1</span>,<span class="number">2</span>);     <span class="comment">//直接调用   函数名就是函数的入口地址	</span></span><br><span class="line">	</span><br><span class="line">    <span class="comment">//定义了一个函数类型  参数(int a和int  b)    返回值(int)</span></span><br><span class="line">    <span class="function"><span class="keyword">typedef</span>   <span class="title">int</span>  <span class="params">(MyFuncType)</span><span class="params">(<span class="type">int</span>  a , <span class="type">int</span>  b)</span></span>;</span><br><span class="line">	MyFuncType  * myPointFunc = <span class="literal">NULL</span>;      <span class="comment">//定义了一个该函数类型的指针变量，用来指向某一类函数的指针	   </span></span><br><span class="line"></span><br><span class="line">	<span class="comment">//要求指针指向的函数是两个int类型参数，返回值是int	       </span></span><br><span class="line">    myPointFunc = &amp;add;</span><br><span class="line">    c = <span class="built_in">myPointFunc</span>(<span class="number">4</span>,<span class="number">5</span>);   <span class="comment">//间接调用  </span></span><br><span class="line">		</span><br><span class="line">    <span class="comment">//相同的处理</span></span><br><span class="line">    myPointFunc = add;   <span class="comment">//作用相同，因为函数名就是函数入口地址</span></span><br><span class="line">	c = <span class="built_in">myPointFunc</span>(<span class="number">4</span>,<span class="number">5</span>);   </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 定义一个函数指针类型</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 定义一个函数指针类型 </span></span><br><span class="line">    <span class="function"><span class="keyword">typedef</span>  <span class="title">int</span> <span class="params">(*MypointFuncType)</span><span class="params">(<span class="type">int</span> a , <span class="type">int</span>  b)</span></span>;    </span><br><span class="line"></span><br><span class="line">    MypointFuncType myPointer;          </span><br><span class="line">    myPointer = add;</span><br><span class="line">    c = <span class="built_in">myPointer</span>(<span class="number">3</span>,<span class="number">4</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//3.  定义一个函数指针</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">int</span>  (*MyPointerFunc)(<span class="type">int</span>  a,  <span class="type">int</span>  b);     </span><br><span class="line">    <span class="comment">// 定义了一个变量  用这个变量指向函数入口地址</span></span><br><span class="line">    MyPointerFunc = add;</span><br><span class="line">    c = <span class="built_in">MyPointerFunc</span>(<span class="number">7</span>,<span class="number">8</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="函数指针做函数参数"><a href="#函数指针做函数参数" class="headerlink" title="函数指针做函数参数"></a>函数指针做函数参数</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//定义一个类型(函数指针指向的函数必须是有两个int参数，返回值int)</span></span><br><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">int</span> <span class="params">(*MyTypeFuncAdd)</span><span class="params">(<span class="type">int</span>  a,  <span class="type">int</span>  b)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//函数指针作为函数参数</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">Mainop</span><span class="params">(MyTypeFuncAdd add)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="type">int</span> c = <span class="built_in">add</span>(<span class="number">4</span>,<span class="number">6</span>);</span><br><span class="line">	<span class="keyword">return</span> c;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> c;	</span><br><span class="line">	MyTypeFuncAdd   myFuncAdd = <span class="literal">NULL</span>;</span><br><span class="line">	myFuncAdd = myadd;           <span class="comment">//一个函数指针</span></span><br><span class="line">	</span><br><span class="line">    c = <span class="built_in">Mainop</span>(myFuncAdd);       <span class="comment">//函数指针作为参数	</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;c:%d\n&quot;</span>,c);                 </span><br><span class="line">	<span class="built_in">system</span>(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//还有一种表示方法，实质是相同的</span></span><br><span class="line"><span class="built_in">int</span>  (*MyPointerFuncAdd)(<span class="type">int</span> a, <span class="type">int</span> b)</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">Mainop2</span><span class="params">(<span class="type">int</span>  (*MyPointerFuncAdd)(<span class="type">int</span> a, <span class="type">int</span> b))</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="type">int</span> c = <span class="built_in">MyPointerFuncAdd</span>(<span class="number">2</span>,<span class="number">3</span>);</span><br><span class="line">	<span class="keyword">return</span> c;   </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> c;</span><br><span class="line">    c =  <span class="built_in">Mainop2</span>(myadd);         <span class="comment">//直接输入函数名称</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;c:%d\n&quot;</span>,c);</span><br><span class="line">	<span class="built_in">system</span>(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    上面的案例中， 任务的实现者和任务的调用者可以相互分开的，主函数中调用Mainop2函数，输入的参数是任务的实现者。也就是调用者完全不需要关心函数Mainop2的入参，只需要传入指针即可，任务实现者后续修改代码也不会影响调用者，因为相互拆分开的。</p>
+<blockquote>
+<p>现在这几个函数是在同一个文件当中，假如 ：</p>
+<p>​                                         int libfun(int (*pDis)(int a, int b))</p>
+<p>是一个库中的函数，就只有使用回调了，通过函数指针参数将外部函数地址传入来实现调用，函数 add 的代码作了修改，也不必改动库的代码，就可以正常实现调用便于程序的维护和升级。</p>
+</blockquote>
+<p>​    当把一个函数指针作为函数的参数，传递给一个被调用函数，被调用函数就可以通过这个指针调用外部的函数，这就形成了回调。</p>
+<hr>
+<h1 id="回调函数"><a href="#回调函数" class="headerlink" title="回调函数"></a>回调函数</h1><p>​    案例背景：公司要开发下一代国民App“明日油条”，一款主打解决国民早餐问题的App，为了加快开发进度，这款应用由A小组和B小组协同开发。其中有一个核心模块由A小组开发然后供B小组调用，这个核心模块被封装成了一个函数，叫做make_youtiao()。</p>
+<p>​    最简单的做法就是A小组调用B小组写函数之后继续执行完成后续流程：</p>
+<img src="https://mmbiz.qpic.cn/mmbiz_png/8g3rwJPmya3KTK31oeaDK36PSaic3t9LDl0Two4NxibagqfQqDHs8gSkNYSO3BhQA4gGRBpjLKab3fY1POTcGhFw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片" style="zoom: 67%;" />
+
+<p>​    但是现实并非如此，make_youtiao()这个函数需要处理的数据非常庞大，假设有10000个，<strong>那么make_youtiao(10000)不会立刻返回</strong>，而是可能需要10分钟才执行完成并返回！那么此时A小组调用B小组的接口之后就阻塞了。在这10分钟内该线程不会被操作系统分配CPU，也就是说该线程得不到任何推进。这种<strong>一直等待直到另一个任务完成的</strong>模式叫做同步。</p>
+<blockquote>
+<p>一种更好的做法是：A小组继续执行自己的任务，等B小组完成后通知A小组，这样两个小组都不需要互相等待，这种模式被称为<strong>异步</strong>。</p>
+</blockquote>
+<hr>
+<h2 id="同步回调"><a href="#同步回调" class="headerlink" title="同步回调"></a>同步回调</h2><p>​    现在已经知道了由于make_youtiao(10000)这个函数10分钟才能返回，那么一种更好的方法是让make_youtiao()这个函数知道制作完油条后该干什么。</p>
+<img src="https://mmbiz.qpic.cn/mmbiz_png/8g3rwJPmya3KTK31oeaDK36PSaic3t9LDC0IR1SibsDXlqzAoPBZBnj3HJic6TwYMot8lribM93JBq3Fs1wLbicpeRA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片" style="zoom: 67%;" />
+
+<p>​    更好的调用make_youtiao的方式是这样的：“制作10000个油条，<strong>炸好后卖出去</strong>”，因此调用make_youtiao就变出这样了：</p>
+<blockquote>
+<p>​                                                                make_youtiao(10000, sell);</p>
+<p>现在make_youtiao这个函数多了一个参数，除了指定制作油条的数量外<strong>还可以指定制作好后该干什么</strong>，第二个被make_youtiao这个函数调用的函数就叫<strong>回调</strong>，<strong>callback</strong>。</p>
+</blockquote>
+<p>​    现在可以看出来虽然sell函数是A小组定义的，但是这个函数却是被其他模块调用执行的！就像下面的过程：</p>
+<img src="https://mmbiz.qpic.cn/mmbiz_png/8g3rwJPmya3KTK31oeaDK36PSaic3t9LDx1fFI6FTG3BvkAfr36DaOIo4MhpdcH5IQSpibIKpvLIv4JbH6sfBMzw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片" style="zoom: 67%;" />
+
+<p>​    这样带来的好处就是不需要监视着等待，只需要将make_youtiao这个函数执行完后该做的任务交代给make_youtiao这个函数了。</p>
+<blockquote>
+<p>make_youtiao()函数的功能由B小组编写给A小组调用，但是sell的函数是由A小组编写定义并通过回调方式让B执行。为什么不让B小组直接实现sell函数然后执行呢？</p>
+<p>原因是：这款APP是由AB两个小组联合开发，B小组在编写make_youtiao时怎么知道A小组如何使用这个模块，无法知道执行完make_youtiao的后序操作。除此之外，如果现在C小组也要调用这个make_youtiao接口，接着不是sell而是存储store，那么B小组还要写一个store函数。B小组任务严重饱和显然不合理。</p>
+<p>所以最佳做法：调用make_youtiao自己定义后序操作，通过回调让B小组在制作完成后调用回调函数执行后序流程！</p>
+</blockquote>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">make_youtiao</span><span class="params">(<span class="type">int</span> num)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">real_make_youtiao</span>(num);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (Team_B) &#123;</span><br><span class="line">       <span class="built_in">sell</span>(); <span class="comment">// 执行回调</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (Team_D) &#123;</span><br><span class="line">       <span class="built_in">store</span>(); <span class="comment">// 放到仓库</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    编写make_youtiao的B小组完全可以通过回调函数将接下来该干什么交给调用方实现，B小组的同学只需要针对回调函数这一抽象概念进行编程就好了。</p>
+<hr>
+<h2 id="异步回调"><a href="#异步回调" class="headerlink" title="异步回调"></a>异步回调</h2><p>​    上面的示例中，虽然我们使用了回调这一概念，也就是<strong>调用方实现回调函数然后再将该函数当做参数传递给其它模块调用</strong>。但是还有一个问题，那就是make_youtiao函数的调用方式依然是同步的。A小组在执行make_youtiao(10000, sell)函数时依然要等待make_youtiao函数返回后才可以继续后续流程。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//make_youtiao函数执行完需要10分钟，也就是说即便我们使用了回调，</span></span><br><span class="line"><span class="comment">//调用方完全不需要关心制作完油条后的后续流程，但是调用方依然会被阻塞10分钟，这就是同步调用的问题所在。</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">make_youtiao</span><span class="params">(<span class="type">int</span> num, func call_back)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">real_make_youtiao</span>(num);</span><br><span class="line">    <span class="built_in">call_back</span>(); <span class="comment">//执行回调 </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    针对这个问题只能靠异步调用解决：</p>
+<blockquote>
+<p>反正制作完油条后的后续流程并不是调用方该关心的，也就是说调用方并不关心make_youtiao这一函数的返回值，那么一种更好的方式是：<strong>把制作油条的这一任务放到另一个线程(进程)、甚至另一台机器上</strong>。</p>
+</blockquote>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">make_youtiao</span><span class="params">(<span class="type">int</span> num, func call_back)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 在新的线程中执行处理逻辑</span></span><br><span class="line">    <span class="built_in">create_thread</span>(real_make_youtiao,</span><br><span class="line">                  num,</span><br><span class="line">                  call_back);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<img src="https://mmbiz.qpic.cn/mmbiz_png/8g3rwJPmya3KTK31oeaDK36PSaic3t9LDJq57truibr8GAibc1RI1mku6SJ9hbbZlxxO1xpeRiaQHA0qjAVjzJQBAw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片" style="zoom:67%;" />
+
+<p>​    从上图中可以看到：这时当我们调用make_youtiao时就会<strong>立刻返回</strong>，即使油条还没有真正开始制作，而调用方也完全无需等待制作油条的过程，可以立刻执行后流程。</p>
+<hr>
+<p>​    异步回调中这个任务实际上被分成两个部分，第一个部分是A小组需要处理的调用make_youtiao之前的工作。第二个部分就是make_youtiao的内部工作以及sell的内容，这块是在其他线程、进程、甚至另外一个机器上处理的。这个第二部分的调用不在A的控制范围之内。</p>
+<blockquote>
+<p>也就是说：回调函数的本质就是“<strong>只有我们才知道做些什么，但是我们并不清楚什么时候去做这些，只有其它模块才知道，因此我们必须把我们知道的封装成回调函数告诉其它模块</strong>”。</p>
+</blockquote>
+<hr>
+<h2 id="正式定义"><a href="#正式定义" class="headerlink" title="正式定义"></a>正式定义</h2><p>​    回调函数本质上还是一个函数，在计算机科学中，回调函数指的是一段以参数的形式传递给其他代码的可执行代码。对于一般的函数，函数的编写方是我们自己，调用方也是我们自己。</p>
+<p>​    但是回调函数不一样，虽然函数的编写方是自己，但是函数的调用方不是我们，而是我们引用的其他模块！也就是第三方库，我们调用第三方库中的函数，并把回调函数传递给第三方库，第三方库中的函数调用我们编写的回调函数。</p>
+<img src="https://mmbiz.qpic.cn/mmbiz_png/8g3rwJPmya3KTK31oeaDK36PSaic3t9LD5vkmLgv7xuTuO7R01U20JvGmICxramu15ibos6OMPp0yA0j5ofGibqOg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片" style="zoom:67%;" />
+
+<blockquote>
+<p>之所以需要给第三方库指定回调函数，是因为第三方库的编写者并不清楚在某些特定节点，比如我们举的例子油条制作完成、接收到网络数据、文件读取完成等之后该做什么，这些只有库的使用方才知道，因此第三方库的编写者无法针对具体的实现来写代码，而只能对外提供一个回调函数，库的使用方来实现该函数，第三方库在特定的节点调用该回调函数就可以了。</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Barret</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2021/07/25/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0/">http://example.com/2021/07/25/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">Barret Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/07/25/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8/"><img class="prev-cover" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">右值引用</div></div></a></div><div class="next-post pull-right"><a href="/2021/07/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%B8%89)/"><img class="next-cover" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">进程</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F14206928472%2F1000.jpg&amp;refer=http%3A%2F%2Finews.gtimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650157497&amp;t=70dfbdc4919a4e744f090628aaf5059d" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Barret</div><div class="author-info__description">Welcome Visit</div></div><div class="card-info-data is-center"><div class="card-info-data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a></div><div class="card-info-data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a></div><div class="card-info-data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/anyeyueren" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:2412704562@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E6%8C%87%E9%92%88"><span class="toc-number">1.</span> <span class="toc-text">函数指针</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E6%8C%87%E9%92%88%E5%81%9A%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0"><span class="toc-number">1.1.</span> <span class="toc-text">函数指针做函数参数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0"><span class="toc-number">2.</span> <span class="toc-text">回调函数</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8C%E6%AD%A5%E5%9B%9E%E8%B0%83"><span class="toc-number">2.1.</span> <span class="toc-text">同步回调</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%82%E6%AD%A5%E5%9B%9E%E8%B0%83"><span class="toc-number">2.2.</span> <span class="toc-text">异步回调</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A3%E5%BC%8F%E5%AE%9A%E4%B9%89"><span class="toc-number">2.3.</span> <span class="toc-text">正式定义</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%B8%83)/" title="进程同步和信号量"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="进程同步和信号量"/></a><div class="content"><a class="title" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%B8%83)/" title="进程同步和信号量">进程同步和信号量</a><time datetime="2021-11-24T22:04:16.000Z" title="发表于 2021-11-25 06:04:16">2021-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/" title="信号量临界区保护"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="信号量临界区保护"/></a><div class="content"><a class="title" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/" title="信号量临界区保护">信号量临界区保护</a><time datetime="2021-11-24T22:04:16.000Z" title="发表于 2021-11-25 06:04:16">2021-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/29/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AD)/" title="CPU调度策略"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CPU调度策略"/></a><div class="content"><a class="title" href="/2021/10/29/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AD)/" title="CPU调度策略">CPU调度策略</a><time datetime="2021-10-28T22:04:16.000Z" title="发表于 2021-10-29 06:04:16">2021-10-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/" title="内核级线程"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="内核级线程"/></a><div class="content"><a class="title" href="/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/" title="内核级线程">内核级线程</a><time datetime="2021-10-24T22:04:16.000Z" title="发表于 2021-10-25 06:04:16">2021-10-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/17/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" title="智能指针"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="智能指针"/></a><div class="content"><a class="title" href="/2021/10/17/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" title="智能指针">智能指针</a><time datetime="2021-10-16T22:04:16.000Z" title="发表于 2021-10-17 06:04:16">2021-10-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By Barret</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

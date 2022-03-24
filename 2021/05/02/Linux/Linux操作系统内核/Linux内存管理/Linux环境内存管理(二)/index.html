@@ -1,0 +1,342 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Linux环境内存管理(二) | Barret Blog</title><meta name="keywords" content="IT"><meta name="author" content="Barret"><meta name="copyright" content="Barret"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="虚拟内存​    既然不能直接访问物理内存，那么就需要引入一个中间层来解决问题，此时内存管理就在程序和物理内存之间引入了虚拟内存的概念，从而对进程的地址和物理地址进行隔离。这需要内存管理单元(MMU)来实现。  注：Linux系统会在硬件物理内存和进程所使用的虚拟内存之间建立一种映射关系，这种映射是以进程为单位，因而不同的进程可以使用相同的虚拟内存，而这些相同的虚拟内存，可以映射到不同的物理内存上">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux环境内存管理(二)">
+<meta property="og:url" content="http://example.com/2021/05/02/Linux/Linux%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/Linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Linux%E7%8E%AF%E5%A2%83%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86(%E4%BA%8C)/index.html">
+<meta property="og:site_name" content="Barret Blog">
+<meta property="og:description" content="虚拟内存​    既然不能直接访问物理内存，那么就需要引入一个中间层来解决问题，此时内存管理就在程序和物理内存之间引入了虚拟内存的概念，从而对进程的地址和物理地址进行隔离。这需要内存管理单元(MMU)来实现。  注：Linux系统会在硬件物理内存和进程所使用的虚拟内存之间建立一种映射关系，这种映射是以进程为单位，因而不同的进程可以使用相同的虚拟内存，而这些相同的虚拟内存，可以映射到不同的物理内存上">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650272949&t=18f99d2e597ef4e5080a0e7cdc68b6e1">
+<meta property="article:published_time" content="2021-05-02T12:04:16.000Z">
+<meta property="article:modified_time" content="2022-03-22T00:21:58.719Z">
+<meta property="article:author" content="Barret">
+<meta property="article:tag" content="IT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650272949&t=18f99d2e597ef4e5080a0e7cdc68b6e1"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2021/05/02/Linux/Linux%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/Linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Linux%E7%8E%AF%E5%A2%83%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86(%E4%BA%8C)/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":50},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Linux环境内存管理(二)',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-03-22 08:21:58'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.0.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F14206928472%2F1000.jpg&amp;refer=http%3A%2F%2Finews.gtimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650157497&amp;t=70dfbdc4919a4e744f090628aaf5059d" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><div class="data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a></div><div class="data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a></div><div class="data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Barret Blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Linux环境内存管理(二)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-05-02T12:04:16.000Z" title="发表于 2021-05-02 20:04:16">2021-05-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-03-22T00:21:58.719Z" title="更新于 2022-03-22 08:21:58">2022-03-22</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Linux环境内存管理(二)"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="虚拟内存"><a href="#虚拟内存" class="headerlink" title="虚拟内存"></a>虚拟内存</h1><p>​    既然不能直接访问物理内存，那么就需要引入一个中间层来解决问题，此时内存管理就在程序和物理内存之间引入了虚拟内存的概念，从而对进程的地址和物理地址进行隔离。这需要<strong>内存管理单元</strong>(MMU)来实现。</p>
+<blockquote>
+<p>注：Linux系统会在硬件物理内存和进程所使用的虚拟内存之间建立一种映射关系，这种映射是以进程为单位，因而不同的进程可以使用相同的虚拟内存，而这些相同的虚拟内存，可以映射到不同的物理内存上。</p>
+</blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/anyeyueren/picgoimg/studyImg/%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8.png"></p>
+<p>​    上图是虚拟寻址的过程，应用程序员所能看到的都是虚拟地址，CPU将访问的虚拟地址输入后，内存管理单元(MMU)将地址翻译成物理地址，根据物理地址可以直接访问内存和DMA空间。获取到该物理地址对应的数据后会将数据传送到CPU。从而完成数据在内存和磁盘之间来回移动。</p>
+<blockquote>
+<ul>
+<li>虚拟内存是由MMU建立的，操作系统知识负责管理虚拟内存，虚拟地址空间是MMU经过转换后制造出来的内存空间；</li>
+<li>虚拟内存通过“页”的形式组织，页是操作系统在磁盘和内存之间移动的单位，一般为几K字节；</li>
+</ul>
+</blockquote>
+<p>​    在保护模式下，我们知道无论CPU运行于用户态还是核心态，CPU执行程序所访问的地址都是虚拟地址，MMU 必须通过读取控制寄存器CR3中的值作为当前页面目录的指针，进而根据分页内存映射机制（参看相关文档）将该虚拟地址转换为真正的物理地址才能让CPU真 正的访问到物理地址。</p>
+<hr>
+<h2 id="虚拟内存划分"><a href="#虚拟内存划分" class="headerlink" title="虚拟内存划分"></a>虚拟内存划分</h2><p>​    Linux操作系统中每个进程都有4G内存地址空间(虚拟内存空间)，将虚拟内存划分为**内核空间(1G)<strong>和</strong>用户空间(3G)<strong>。多个进程之间用户空间是相互独立的，</strong><u>内核空间是相互共享的</u>**。</p>
+<p>​    用户进程平时执行应用代码时，CPU访问的虚拟内存空间是在0-3GB空间内，此时用户进程是用户态。</p>
+<p>​    线性地址空间：是指Linux系统中从0x00000000到0xFFFFFFFF整个4GB虚拟存储空间。</p>
+<ul>
+<li><p>​    <strong>内核与内核空间</strong></p>
+<p>​    如果从静态角度思考，内核相当于一个lib库，对外提供了API代码存放在内核的库中；从动态角度思考，内核中启动了许多内核线程来提供系统服务，可以通过<code>ps</code>命令查看。内核线程一定是运行在内核态的，所能访问的虚拟地址也只有那1GB空间。</p>
+<p>​    内核空间只有运行在内核态的进程才能访问，那么一个运行在用户态的普通用户进程想要进入内核态需要—— **<u>系统调用</u>**。</p>
+<blockquote>
+<p>只有通过系统调用、外设中断或异常才能访问内核空间。用户进程执行系统调用时，通过软中断的方式，将会陷入到内核代码中，此时用户进程是内核态，CPU访问的是高位的1GB的虚拟地址空间。</p>
+</blockquote>
+</li>
+<li><p><strong>内核态与用户态切换</strong></p>
+<p>​    从用户态进入到内核态，涉及到状态切换，因此需要保留现场，用户态和内核态各自都维护了一套栈空间。用户空间和内核空间采用的映射机制是不同的。虽然<strong>内核空间只有1GB虚拟地址空间，但是能访问到所有的物理内存</strong>。</p>
+</li>
+</ul>
+<h3 id="内核空间"><a href="#内核空间" class="headerlink" title="内核空间"></a>内核空间</h3><p>​        Linux操作系统和设备的驱动程序全部都运行在内核空间当中，应用程序运行在用户空间。用户空间的内存映射采用段页式，而内核空间有自己的规则。内核线程没有用户空间，因为不产生用户空间地址！</p>
+<blockquote>
+<p>用户空间和内核空间之间不能简单地使用指针传递数据，因为用户空间的数据可能会被换出，若内核空间使用用户空间传进来的指针，访问内存时可能数据不在其中。</p>
+<p>后面学习父子进程时，子进程共享（继承）父进程的用户空间只是使用与父进程相同的用户线性地址到物理内存地址的映射关系，而不是共享父进程用户空间，子进程仍然有自己的用空间。</p>
+</blockquote>
+<h4 id="内核空间地址划分"><a href="#内核空间地址划分" class="headerlink" title="内核空间地址划分"></a>内核空间地址划分</h4><p>​    32位Linux内核虚拟地址空间高1GB为内核空间，内核可用的线性地址范围：0xC0000000 ~ 0xFFFFFFF。当内核模块线程访问内存时，代码中的内存地址都为<strong>逻辑地址</strong>，需要进一步<strong>一对一</strong>的映射，才能访问到真正的物理地址。</p>
+<blockquote>
+<p>内核的虚拟地址在整个虚拟地址空间的“高端”，但是映射到物理内存的低端地址。</p>
+<p>​                             地址映射关系： 物理地址 &#x3D; 逻辑地址 - 0xC0000000</p>
+</blockquote>
+<p>​    按照上述的映射关系，内核对应到物理内存范围就是0×0 ~ 0×40000000，只能访问到1G物理内存。也就是说对于安装8G的物理内存而言内核只能访问前1G物理内存！但是内核是需要能够访问到所有物理内存的，那么就不能把整个内核地址空间全部进行简单的地址线性映射。</p>
+<p>​    因此x86架构中将<strong>内核地址空间</strong>划分三部分：<strong>ZONE_DMA</strong>、<strong>ZONE_NORMAL</strong>和 <strong>ZONE_HIGHMEM</strong>。ZONE_HIGHMEM即为高端内存。前两者采用的直接映射，高端内存采用的是动态映射。（ZONE_DMA和ZONE_NORAML合起来是直接映射区）</p>
+<ul>
+<li>ZONE_DMA：内核内存开始的16MB；</li>
+<li>ZONE_NORAML：16MB~896MB；</li>
+<li>ZONE_HIGHMEM：894MB~1GB(结束)；</li>
+</ul>
+<p>​    高端内存HIGH_MEM地址空间范围为 0xF8000000 ~ 0xFFFFFFFF(896MB～1024MB)。需要思考的是内核是<strong>如何借助128MB高端内存地址空间实现访问所有物理内存</strong>。</p>
+<blockquote>
+<p>当内核想访问高于896MB物理地址内存时，从0xF8000000 ~ 0xFFFFFFFF地址空间范围内找一段相应大小空闲的逻辑地址空间，借用一会。借用这段逻辑地址空间，建立映射到想访问的那段物理内存（即填充内核PTE页面表），<strong>临时用一会，用完后归还</strong>。</p>
+</blockquote>
+<p>​    <strong>高端内存的最基本思想</strong>：借一段地址空间，建立临时地址映射，用完后释放，达到这段地址空间可以循环使用，访问所有物理内存。</p>
+<blockquote>
+<p>若内核进程或模块一直占用某段逻辑地址空间不释放，则内核的高端内存地址空间越来越紧张，若都被占用不释放，则没有建立映射到物理内存都无法访问了。</p>
+</blockquote>
+<h4 id="高端内存划分"><a href="#高端内存划分" class="headerlink" title="高端内存划分"></a>高端内存划分</h4><p><img src="https://cdn.jsdelivr.net/gh/anyeyueren/picgoimg/studyImg/%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4%E5%88%92%E5%88%86.png"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> VMALLOC_START    _AC(0xffffc90000000000, UL)    <span class="comment">//vmalloc动态映射区起始地址</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> VMALLOC_END      _AC(0xffffe8ffffffffff, UL)    <span class="comment">//vmalloc动态映射区结束地址</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> VMEMMAP_START	 _AC(0xffffea0000000000, UL)    <span class="comment">//map区域首地址</span></span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>内核将高端内存细分为三个部分，现在针对三个区域有三种映射方式：</p>
+<ul>
+<li><strong>动态内存映射区</strong>(VMALLOC_START ~ VMALLOC_END)</li>
+</ul>
+<blockquote>
+<p>映射方法：该区域由内核函数vmalloc来分配，调用函数申请内存时就可能申请到高端内存的页面；</p>
+<p>特       点：线性空间部分是连续的，但是对应的物理内存不一定连续。valloc分配的线性地址所对应的物理页面既可能处于低端内存，也可能处于高端内存；</p>
+</blockquote>
+<ul>
+<li><strong>永久内存映射区</strong>(KMAP_BASE~FIXADDR_START)</li>
+</ul>
+<blockquote>
+<p>映射方法：使用alloc_page(_GFP_HIGHMEM)分配高端内存页或者使用kmap函数将分配到的高端内存映射到该区域；</p>
+<p>特       点： 这个空间是 4M 大小，因此仅仅需要一个页表即可，内核通过来 pkmap_page_table 寻找这个页表。由于这个空间是 4M 大小，最多能同时映射 1024 个 page；</p>
+<p>注意点： 对于不使用的的 page，及应该时从这个空间释放掉；</p>
+<p>函   数：通过 kmap()，可以把一个 page 映射到这个空间来，通过 kunmap() ，可以把一个 page 对应的线性地址从这个空间释放出来；</p>
+</blockquote>
+<ul>
+<li><strong>固定映射区</strong>(FIXADDR_START~4G)</li>
+</ul>
+<blockquote>
+<p>该区域和4G的顶端只有4k的隔离带，其每个地址项都服务于特定的用途，如ACPI_BASE等。</p>
+</blockquote>
+<hr>
+<h3 id="用户空间"><a href="#用户空间" class="headerlink" title="用户空间"></a>用户空间</h3><p>​    用户空间分为5个不同的内存区域：代码段、数据段、BSS段、堆和栈。C代码经过预处理、编译、汇编、链接4步后生成一个可执行程序。链接之后会生成一个可执行文件。</p>
+<p>程序没有加载到内存前，可执行程序内部已经分好3段信息，分别为<strong>代码区（text）</strong>、<strong>数据区（data）</strong>和<strong>未初始化数据区（bss）</strong>个部分。通常将data和bss统称为全局区。代码区和全局区在程序加载到内存之前就是固定的，程序运行期间不会改变。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 Test]# size hello</span><br><span class="line">   text    data     bss     dec     hex filename</span><br><span class="line">   1219     548       4    1771     6eb hello  </span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong>代码区（text）</strong></p>
+<p>代码区存放的是程序运行时需要的执行文件代码段，代码区一般是可共享的，且只读。</p>
+</li>
+<li><p><strong>全局初始化数据区&#x2F;静态数据区(data段)</strong></p>
+</li>
+</ul>
+<blockquote>
+<p>(1)  已完成初始化的全局变量；</p>
+<p>(2) 已完成初始化的静态变量(包括全局静态变量和局部静态变量)；</p>
+<p>(3) 常量数据(例如字符串常量)；</p>
+</blockquote>
+<ul>
+<li><strong>未初始化数据区(bss区)</strong></li>
+</ul>
+<blockquote>
+<p>(1) 未初始化的全局变量(默认为0)；</p>
+<p>(2) 未初始化的静态全局变量(默认为0);</p>
+<p>(3) 未初始化的静态局部变量(默认为0);</p>
+</blockquote>
+<p>​    当程序开始运行时，系统将程序加载到内存中，除了上面三个区域之外还增加了栈区和堆区。</p>
+<ul>
+<li><strong>栈区(stack区)</strong></li>
+</ul>
+<blockquote>
+<p>(1) 栈区是在程序加载之后生成的一块先进后出的内存结构，由编译器自动释放，不需要程序员手动操作。</p>
+<p>(2) 栈区存放函数的参数值、返回值、局部变量等。</p>
+<p>注：程序执行过程中栈区数据实时加载释放，故局部变量生存周期为申请到释放该段栈空间。</p>
+</blockquote>
+<ul>
+<li><strong>堆区(heap区)</strong></li>
+</ul>
+<blockquote>
+<p>(1) 堆区位于bss与栈区之间的一块很大的区域，用于动态内存分配，需要由程序员手动申请释放；</p>
+<p>(2) 常用的申请函数有malloc，释放函数有free；</p>
+</blockquote>
+<p>​    C语言中一些变量和函数所位于用户空间中的区域：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>作用域</th>
+<th>生命周期</th>
+<th>存储位置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>auto变量</td>
+<td>一对{}内</td>
+<td>当前函数</td>
+<td>栈区</td>
+</tr>
+<tr>
+<td>static局部变量</td>
+<td>一对{}内</td>
+<td>整个程序运行期</td>
+<td>初始化在data段，未初始化在BSS段</td>
+</tr>
+<tr>
+<td>extern变量</td>
+<td>整个程序</td>
+<td>整个程序运行期</td>
+<td>初始化在data段，未初始化在BSS段</td>
+</tr>
+<tr>
+<td>static全局变量</td>
+<td>当前文件</td>
+<td>整个程序运行期</td>
+<td>初始化在data段，未初始化在BSS段</td>
+</tr>
+<tr>
+<td>extern函数</td>
+<td>整个程序</td>
+<td>整个程序运行期</td>
+<td>代码区</td>
+</tr>
+<tr>
+<td>static函数</td>
+<td>当前文件</td>
+<td>整个程序运行期</td>
+<td>代码区</td>
+</tr>
+<tr>
+<td>register变量</td>
+<td>一对{}内</td>
+<td>当前函数</td>
+<td>运行时存储在CPU寄存器</td>
+</tr>
+<tr>
+<td>字符串常量</td>
+<td>当前文件</td>
+<td>整个程序运行期</td>
+<td>data段</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="用户与内核之间数据拷贝"><a href="#用户与内核之间数据拷贝" class="headerlink" title="用户与内核之间数据拷贝"></a>用户与内核之间数据拷贝</h2><p>​    当程序员在用户空间调用read()系统调用时，进程的操作权就会从用户空间陷入到内核空间。当内核将数据转交给用户空间时会将读取到的内容进行拷贝，这个过程有时间开销，并且伴随着数据量的增大时间开销也会增大。</p>
+<p>​    主要是掌握<strong>copy_to_user</strong>和<strong>copy_from_user</strong>函数的使用，就能实现用户空间和内核空间数据拷贝。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//read函数：从文件file中读取size大小的数据拷贝到用户空间中, 内核数据读取到用户</span></span><br><span class="line"><span class="type">static</span> <span class="type">ssize_t</span> <span class="title function_">read</span><span class="params">(<span class="keyword">struct</span> file *file, <span class="type">char</span> __user *user, <span class="type">size_t</span> size,<span class="type">loff_t</span>*o)</span></span><br><span class="line">&#123;</span><br><span class="line">    ......</span><br><span class="line">    len = min(size, <span class="built_in">strlen</span>(lg-&gt;dead)+<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span> (copy_to_user(user, lg-&gt;dead, len) != <span class="number">0</span>)   <span class="comment">//注意这里的函数copy_to_user</span></span><br><span class="line">        <span class="keyword">return</span> -EFAULT;</span><br><span class="line">    <span class="keyword">return</span> len; </span><br><span class="line">    ......</span><br><span class="line">&#125;</span><br><span class="line">  <span class="comment">//相对的如果是往驱动中写数据，即用户空间数据写入到驱动设备中，调用的是copy_from_user函数</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="linux进程的栈"><a href="#linux进程的栈" class="headerlink" title="linux进程的栈"></a>linux进程的栈</h2><p>​    进程在运行过程中，在用户空间和内核空间都会有各自的栈空间，分别是<strong>用户栈</strong>和<strong>内核栈</strong>。</p>
+<blockquote>
+<p>用户栈：基于进程的虚拟地址空间的管理机制实现，以VMA的形式实现；</p>
+<p>内核栈：每个进程都有属于自己的独自的内核栈，大小根据不同体系结构而不同，一般为1个page，4K；</p>
+</blockquote>
+<h3 id="内核栈定义"><a href="#内核栈定义" class="headerlink" title="内核栈定义"></a>内核栈定义</h3><p>​    找到源码中内核栈的代码定义，内核用一个union变量完成了两个目的：内核栈 + thread_info结构体，那么会不会产生冲突呢？答案是不会，因为在虚拟地址空间中内核栈是从栈顶往下增长，而thread_info在整个栈的底部，故不会冲突！</p>
+<p>​    但是如果内核栈持续增长，会溢出到thread_info区域，从而产生不可预知的后果。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//内核栈的定义</span></span><br><span class="line"><span class="class"><span class="keyword">union</span> <span class="title">thread_union</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">thread_info</span> <span class="title">thread_info</span>;</span>                    <span class="comment">//线程信息描述结构体</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> <span class="built_in">stack</span>[THREAD_SIZE/<span class="keyword">sizeof</span>(<span class="type">long</span>)];     <span class="comment">//栈数组</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//THREAD_SIZE的大小在不同的CPU体系中配置不同，例如对于arm体系而言大小为1个page，</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> THREAD_SIZE_ORDER	1</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> THREAD_SIZE  (PAGE_SIZE &lt;&lt; THREAD_SIZE_ORDER)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CURRENT_MASK (~(THREAD_SIZE - 1))</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="用户栈定义"><a href="#用户栈定义" class="headerlink" title="用户栈定义"></a>用户栈定义</h3><p>​    相对的用户空间的栈实际上就是一个栈空间段，在讲述用户空间时已经介绍不再赘述。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Barret</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2021/05/02/Linux/Linux%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/Linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Linux%E7%8E%AF%E5%A2%83%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86(%E4%BA%8C)/">http://example.com/2021/05/02/Linux/Linux%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/Linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Linux%E7%8E%AF%E5%A2%83%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86(%E4%BA%8C)/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">Barret Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-full"><a href="/2021/05/02/Linux/Linux%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/Linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Linux%E7%8E%AF%E5%A2%83%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86(%E4%B8%80)/"><img class="prev-cover" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Linux环境内存管理(一)</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F14206928472%2F1000.jpg&amp;refer=http%3A%2F%2Finews.gtimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650157497&amp;t=70dfbdc4919a4e744f090628aaf5059d" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Barret</div><div class="author-info__description">Welcome Visit</div></div><div class="card-info-data is-center"><div class="card-info-data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a></div><div class="card-info-data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a></div><div class="card-info-data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/anyeyueren" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:2412704562@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98"><span class="toc-number">1.</span> <span class="toc-text">虚拟内存</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E5%88%92%E5%88%86"><span class="toc-number">1.1.</span> <span class="toc-text">虚拟内存划分</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E7%A9%BA%E9%97%B4"><span class="toc-number">1.1.1.</span> <span class="toc-text">内核空间</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E7%A9%BA%E9%97%B4%E5%9C%B0%E5%9D%80%E5%88%92%E5%88%86"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">内核空间地址划分</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%AB%98%E7%AB%AF%E5%86%85%E5%AD%98%E5%88%92%E5%88%86"><span class="toc-number">1.1.1.2.</span> <span class="toc-text">高端内存划分</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E7%A9%BA%E9%97%B4"><span class="toc-number">1.1.2.</span> <span class="toc-text">用户空间</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E4%B8%8E%E5%86%85%E6%A0%B8%E4%B9%8B%E9%97%B4%E6%95%B0%E6%8D%AE%E6%8B%B7%E8%B4%9D"><span class="toc-number">1.2.</span> <span class="toc-text">用户与内核之间数据拷贝</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#linux%E8%BF%9B%E7%A8%8B%E7%9A%84%E6%A0%88"><span class="toc-number">1.3.</span> <span class="toc-text">linux进程的栈</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E6%A0%88%E5%AE%9A%E4%B9%89"><span class="toc-number">1.3.1.</span> <span class="toc-text">内核栈定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E6%A0%88%E5%AE%9A%E4%B9%89"><span class="toc-number">1.3.2.</span> <span class="toc-text">用户栈定义</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%B8%83)/" title="进程同步和信号量"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="进程同步和信号量"/></a><div class="content"><a class="title" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%B8%83)/" title="进程同步和信号量">进程同步和信号量</a><time datetime="2021-11-24T22:04:16.000Z" title="发表于 2021-11-25 06:04:16">2021-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/" title="信号量临界区保护"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="信号量临界区保护"/></a><div class="content"><a class="title" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/" title="信号量临界区保护">信号量临界区保护</a><time datetime="2021-11-24T22:04:16.000Z" title="发表于 2021-11-25 06:04:16">2021-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/29/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AD)/" title="CPU调度策略"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CPU调度策略"/></a><div class="content"><a class="title" href="/2021/10/29/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AD)/" title="CPU调度策略">CPU调度策略</a><time datetime="2021-10-28T22:04:16.000Z" title="发表于 2021-10-29 06:04:16">2021-10-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/" title="内核级线程"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="内核级线程"/></a><div class="content"><a class="title" href="/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/" title="内核级线程">内核级线程</a><time datetime="2021-10-24T22:04:16.000Z" title="发表于 2021-10-25 06:04:16">2021-10-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/17/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" title="智能指针"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="智能指针"/></a><div class="content"><a class="title" href="/2021/10/17/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" title="智能指针">智能指针</a><time datetime="2021-10-16T22:04:16.000Z" title="发表于 2021-10-17 06:04:16">2021-10-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By Barret</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

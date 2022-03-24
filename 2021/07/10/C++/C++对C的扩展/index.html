@@ -1,0 +1,378 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>C与C++ | Barret Blog</title><meta name="keywords" content="IT"><meta name="author" content="Barret"><meta name="copyright" content="Barret"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="C语言的局限性 类型检查机制相对较弱，使得程序中的一些错误不能在编译时由编译器检查出来。 C语言本身没有支持代码重用的语言结构。 不适合开发大型程序，当程序的规模达到一定的程度时，程序员很难控制程序的复杂性。  C++优点1、全面兼容C，C的许多代码不经修改就可以为Cpp所用，用C编写的库函数和实用软件可以用于Cpp。 2、用C++编写的程序可读性更好，代码结构更为合理，可直接在程序中映射问题空间">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C与C++">
+<meta property="og:url" content="http://example.com/2021/07/10/C++/C++%E5%AF%B9C%E7%9A%84%E6%89%A9%E5%B1%95/index.html">
+<meta property="og:site_name" content="Barret Blog">
+<meta property="og:description" content="C语言的局限性 类型检查机制相对较弱，使得程序中的一些错误不能在编译时由编译器检查出来。 C语言本身没有支持代码重用的语言结构。 不适合开发大型程序，当程序的规模达到一定的程度时，程序员很难控制程序的复杂性。  C++优点1、全面兼容C，C的许多代码不经修改就可以为Cpp所用，用C编写的库函数和实用软件可以用于Cpp。 2、用C++编写的程序可读性更好，代码结构更为合理，可直接在程序中映射问题空间">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650272949&t=18f99d2e597ef4e5080a0e7cdc68b6e1">
+<meta property="article:published_time" content="2021-07-09T22:04:16.000Z">
+<meta property="article:modified_time" content="2021-08-01T14:03:32.373Z">
+<meta property="article:author" content="Barret">
+<meta property="article:tag" content="IT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650272949&t=18f99d2e597ef4e5080a0e7cdc68b6e1"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2021/07/10/C++/C++%E5%AF%B9C%E7%9A%84%E6%89%A9%E5%B1%95/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":50},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'C与C++',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-08-01 22:03:32'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.0.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F14206928472%2F1000.jpg&amp;refer=http%3A%2F%2Finews.gtimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650157497&amp;t=70dfbdc4919a4e744f090628aaf5059d" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><div class="data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a></div><div class="data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a></div><div class="data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Barret Blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">C与C++</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-07-09T22:04:16.000Z" title="发表于 2021-07-10 06:04:16">2021-07-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-08-01T14:03:32.373Z" title="更新于 2021-08-01 22:03:32">2021-08-01</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="C与C++"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="C语言的局限性"><a href="#C语言的局限性" class="headerlink" title="C语言的局限性"></a>C语言的局限性</h1><ul>
+<li>类型检查机制相对较弱，使得程序中的一些错误不能在编译时由编译器检查出来。</li>
+<li>C语言本身没有支持代码<strong>重用的语言结构</strong>。</li>
+<li><strong>不适合开发大型程序</strong>，当程序的规模达到一定的程度时，程序员很难控制程序的复杂性。</li>
+</ul>
+<h2 id="C-优点"><a href="#C-优点" class="headerlink" title="C++优点"></a>C++优点</h2><p>1、全面兼容C，C的许多代码不经修改就可以为Cpp所用，用C编写的库函数和实用软件可以用于Cpp。</p>
+<p>2、用C++编写的程序可读性更好，代码结构更为合理，可直接在程序中映射问题空间结构。</p>
+<p>3、生成代码的质量高，运行效率高。</p>
+<p>4、从开发时间、费用到形成软件的可重用性、可扩充性、可维护性和可靠性等方面有了很大提高，使得大中型的程序开发项目变得容易得多。</p>
+<p>5、支持面向对象的机制，可方便的构造出模拟现实问题的实体和操作。</p>
+<hr>
+<h1 id="C-对C的扩展"><a href="#C-对C的扩展" class="headerlink" title="C++对C的扩展"></a>C++对C的扩展</h1><p>​    所谓namespace，是指标识符的各种可见范围。C++标准程序库中的所有标识符都被定义于一个名为std的namespace中。由于namespace的概念，使用C++标准程序库的任何标识符时，可以有三种选择：</p>
+<blockquote>
+<ol>
+<li>直接指定标识符</li>
+</ol>
+<p>  例如std::ostream而不是ostream。完整语句如下： std::cout &lt;&lt; std::hex &lt;&lt; 3.4 &lt;&lt; std::endl；</p>
+<ol start="2">
+<li>使用using关键字</li>
+</ol>
+<p>  using std::cout; using std::endl; using std::cin; 以上程序可以写成 cout &lt;&lt; std::hex &lt;&lt; 3.4 &lt;&lt; endl;</p>
+<ol start="3">
+<li><p>最方便的就是使用using namespace std</p>
+<p>例如： using namespace std;这样命名空间std内定义的所有标识符都有效（曝光）。就好像它们被声明为全局变量一样。那么以上语句可以如下写: cout &lt;&lt;hex &lt;&lt; 3.4 &lt;&lt; endl;</p>
+</li>
+</ol>
+</blockquote>
+<hr>
+<h2 id="C-命名空间语法"><a href="#C-命名空间语法" class="headerlink" title="C++命名空间语法"></a>C++命名空间语法</h2><h3 id="namespace"><a href="#namespace" class="headerlink" title="namespace"></a>namespace</h3><p>​    在C++中，名称（name）可以是符号常量、变量、宏、函数、结构、枚举、类和对象等等。为了避免，在大规模程序的设计中，以及在程序员使用各种各样的C++库时，这些标识符的命名发生冲突，</p>
+<p>​    标准C++引入了关键字namespace（命名空间&#x2F;名字空间&#x2F;名称空间&#x2F;名域），可以更好地控制标识符的作用域。</p>
+<hr>
+<h3 id="std含义"><a href="#std含义" class="headerlink" title="std含义"></a>std含义</h3><p>​    std是c++标准命名空间，c++标准程序库中的所有标识符都被定义在std中，比如标准库中的类iostream、vector等都定义在该命名空间中，使用时要加上using声明**(using namespace std)  或using指示（如std::string、std::vector<int>)。</p>
+<hr>
+<h3 id="C与C-中的命令空间"><a href="#C与C-中的命令空间" class="headerlink" title="C与C++中的命令空间"></a>C与C++中的命令空间</h3><p>(1) C中的命名空间</p>
+<p>​      在C语言中只有一个全局作用域；</p>
+<p>​      C语言中所有的全局标识符共享同一个作用域；</p>
+<p>​      标识符之间可能发生冲突；</p>
+<p>(2) C++中的命名空间</p>
+<p>​      命名空间将<strong>全局作用域分成不同的部分</strong>；</p>
+<p>​      不同命名空间中的标识符可以同名而不会发生冲突；</p>
+<p>​      命名空间可以相互嵌套；</p>
+<p>​      全局作用域也叫默认命名空间；</p>
+<h3 id="C-命令空间使用"><a href="#C-命令空间使用" class="headerlink" title="C++命令空间使用"></a>C++命令空间使用</h3><p>   使用整个命名空间： <strong>using namespace name</strong>;</p>
+<p>​    使用命名空间中的变量： <strong>using name::variable</strong>;</p>
+<p>​    使用默认命名空间中的变量： <strong>::variable</strong>；</p>
+<p>​    默认情况下可以直接使用默 认命名空间中的所有标识符；</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">namespace</span> namespaceA </span><br><span class="line">&#123;                                                                              </span><br><span class="line">	<span class="type">int</span> a = <span class="number">10</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">namespace</span> namespaceB</span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">int</span> a = <span class="number">10</span>;</span><br><span class="line">	<span class="keyword">namespace</span> namespaceC    <span class="comment">//嵌套一个命名空间</span></span><br><span class="line">	&#123;</span><br><span class="line">	       <span class="keyword">struct</span> <span class="title class_">Teacher</span>   </span><br><span class="line">	      &#123;</span><br><span class="line">	 	<span class="type">char</span> name[<span class="number">32</span>];</span><br><span class="line">		<span class="type">int</span> age;</span><br><span class="line">	       &#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">using</span>    <span class="keyword">namespace</span>   namespaceA;</span><br><span class="line">   cout&lt;&lt;  a   &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line">测试出的结果为：<span class="number">10</span>。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="重要结论"><a href="#重要结论" class="headerlink" title="重要结论"></a>重要结论</h3><p>1） 当使用&lt; iostream&gt;的时候，该头文件没有定义全局命名空间，必须使用namespace ::std；</p>
+<p>2） 这样才能正确使用cout。若不引入using namespace std ,需要这样做。std::cout。</p>
+<p>3） c++标准为了和C区别开，也为了正确使用命名空间，规定头文件不使用后缀.h。</p>
+<p>4） C++命名空间的定义：    namespace name {  …  }</p>
+<p>5） using namespace NameSpaceA;  namespce定义可嵌套。</p>
+<hr>
+<h3 id="iostream与iostream-h区别"><a href="#iostream与iostream-h区别" class="headerlink" title="iostream与iostream.h区别"></a>iostream与iostream.h区别</h3><p>​    iostream和iostream.h格式不一样，前者没有后缀，实际上，在你的编译器include文件夹里面可以看到，二者是两个文件，打开文件就会发现，里面的代码是不一样的。</p>
+<p>​    后缀为.h的头文件c++标准已经明确提出不支持了，早些的实现将标准库功能定义在全局空间里，声明在带.h后缀的头文件里，<strong>c++标准为了和C区别开，也为了正确使用命名空间，规定头文件不使用后缀.h</strong>。</p>
+<blockquote>
+<ol>
+<li>当使用&lt;iostream.h&gt;时，相当于在c中调用库函数，使用的是全局命名空间，也就是早期的c++实现；</li>
+<li>当使用&lt; iostream &gt;的时候，该头文件没有定义全局命名空间，必须使用namespace std；这样才能正确使用cout；</li>
+</ol>
+</blockquote>
+<hr>
+<h2 id="register关键字增强"><a href="#register关键字增强" class="headerlink" title="register关键字增强"></a>register关键字增强</h2><p>​    register关键字 请求编译器让变量a<strong>直接放在寄存器</strong>里面，速度快。</p>
+<ol>
+<li>C语言中无法取得register变量地址，C++中可以得到register变量的地址；</li>
+</ol>
+<blockquote>
+<p>在C++中依然支持register关键字，C++编译器有自己的优化方式，不使用register也可能做优化。（当程序中频繁用到某个变量，会自动把变量传达寄存器中！）</p>
+</blockquote>
+<ol start="2">
+<li><p>C++编译器发现程序中需要取register变量的地址时，register对变量的声明变得无效；</p>
+<blockquote>
+<p>早期C语言编译器不会对代码进行优化，因此register变量是一个很好的补充。</p>
+</blockquote>
+</li>
+</ol>
+<hr>
+<h2 id="变量检测增强"><a href="#变量检测增强" class="headerlink" title="变量检测增强"></a>变量检测增强</h2><p>​    在C语言中重复定义多个同名的全局变量是合法的，C语言中多个同名的全局变量最终会<strong>被链接到全局数据区的同一个地址空间</strong>上。但是C++直接拒绝这种二义性的做法。</p>
+<hr>
+<h2 id="struct类型增强"><a href="#struct类型增强" class="headerlink" title="struct类型增强"></a>struct类型增强</h2><p>​    C语言的struct定义了一组变量的集合，C编译器并不认为这是一种新的类型。C++中的struct是一个新类型的定义声明。</p>
+<hr>
+<h2 id="类型强指定"><a href="#类型强指定" class="headerlink" title="类型强指定"></a>类型强指定</h2><p>​    C++中所有的变量和函数都必须有类型，C语言中的默认类型在C++中是不合法的。</p>
+<blockquote>
+<p>在C语言中</p>
+<p>​    int f(   )；   表示返回值为int，接受任意参数的函数;</p>
+<p>​    int f(void)；  表示返回值为int的无参函数;</p>
+<p>在C++中    </p>
+<p>​      int f(  );和int f(void)具有相同的意义，都表示返回值为int的无参函数;</p>
+<p>C++更加强调类型，任意的程序元素都必须显示指明类型</p>
+</blockquote>
+<hr>
+<h2 id="C-中新增bool类型关键字"><a href="#C-中新增bool类型关键字" class="headerlink" title="C++中新增bool类型关键字"></a>C++中新增bool类型关键字</h2><p>​    C++在C语言的基本类型系统之上增加了bool，取值只有0和1。</p>
+<hr>
+<h2 id="三目运算符功能增强"><a href="#三目运算符功能增强" class="headerlink" title="三目运算符功能增强"></a>三目运算符功能增强</h2><p>​    返回一个最小数并给最小数对应的变量赋值为3：         (a &lt; b ? a : b )&#x3D; 30;</p>
+<ul>
+<li>C语言下会直接报错，因为<strong>C语言表达式的返回值是变量的数值</strong>，C语言中表达式的元素结果放在了寄存器中，表达式返回的是一个数，而程序中的代码相当于“11 &#x3D; 30”，显然是不合理的；</li>
+<li>C++下面可以正确运行，因为<strong>C++语言下表达式返回的是变量本身</strong>；</li>
+</ul>
+<blockquote>
+<p>C++编译器是如何做到的呢？</p>
+<p>解释：让表达式返回一个内存空间，即内存首地址(指针)。</p>
+<p>C语言环境下如何实现C++的效果？</p>
+<p>解释:  *(a&lt;b ? &amp;a : &amp;b) &#x3D; 30，满足条件的情况下返回值是a的地址（&amp;a）,此时加 * 对数值进行修改。简而言之就是C++编译器帮助程序员完成这个操作。</p>
+</blockquote>
+<hr>
+<h2 id="输入输出流"><a href="#输入输出流" class="headerlink" title="输入输出流"></a>输入输出流</h2><p>​    C++中使用cin和cout，cout和cin分别是C++的标准输出流和输入流。Cpp支持重定向，但一般cout指的是屏幕， cin指的是键盘。操作符“&lt;&lt;”和“&gt;&gt;”除了具有C语言中定义的左移和右移的功能外，在这里符号“&lt;&lt;”是把右方的参数写到标准输出流cout中；相反，符号“&gt;&gt;”则是将标准输入流的数据赋给右方的变量。这种方式更加安全方便。</p>
+<hr>
+<h2 id="操作符dec、-hex和oct的使用"><a href="#操作符dec、-hex和oct的使用" class="headerlink" title="操作符dec、 hex和oct的使用"></a><strong>操作符dec、 hex和oct的使用</strong></h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;iostream.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> x=<span class="number">25</span>;</span><br><span class="line">    cout &lt;&lt; hex &lt;&lt; x &lt;&lt; <span class="string">&#x27; &#x27;</span> &lt;&lt; dec &lt;&lt; x &lt;&lt; <span class="string">&#x27; &#x27;</span> &lt;&lt; oct &lt;&lt; x &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出结果为：19 25 31</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="灵活的变量说明"><a href="#灵活的变量说明" class="headerlink" title="灵活的变量说明"></a><strong>灵活的变量说明</strong></h2><p>​    在程序中的不同位置采用不同的变量定义方式，决定了该变量具有不同的特点。变量的定义一般可有以下三种位置：</p>
+<p>(1) <strong>在函数体内部</strong></p>
+<p>在函数体内部定义的变量称为局部变量，这种局部变量只在进入定义它的函数体时起作用，离开该函数体后该变量就消失（被释放），即不再起作用。因此，不同函数体内部可以定义相同名称的变量，而互不干扰。</p>
+<p>(2) <strong>形式参数</strong></p>
+<p>当定义一个有参函数时，函数名后面括号内的变量，统称为形式参数。</p>
+<p>(3) <strong>全局变量</strong></p>
+<p>在所有函数体外部定义的变量，其作用范围是整个程序，并在整个程序运行期间有效。</p>
+<ul>
+<li>在C语言中，全局变量声明必须在任何函数之前，局部变量必须集中在可执行语句之前。</li>
+<li>Cpp中的变量声明非常灵活，它允许变量声明与可执行语句在程序中交替出现。</li>
+</ul>
+<hr>
+<h2 id="结构、联合和枚举名"><a href="#结构、联合和枚举名" class="headerlink" title="结构、联合和枚举名"></a>结构、联合和枚举名</h2><p>​    在C++中，结构名、联合名、枚举名都是类型名。在定义变量时，不必在结构名、联合名或枚举名前冠以struct、union或enum。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">boole</span>&#123;FALSE,TRUE&#125;;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">string</span>&#123;</span><br><span class="line">    <span class="type">char</span> *string;</span><br><span class="line">    <span class="type">int</span> length;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">union</span> <span class="title class_">number</span>&#123;</span><br><span class="line">    <span class="type">int</span> i;</span><br><span class="line">    <span class="type">float</span> f;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//在传统的C中，定义变量时，必须写成:</span></span><br><span class="line"><span class="keyword">enum</span> <span class="title class_">boole</span> done;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">string</span> str;</span><br><span class="line"><span class="keyword">union</span> <span class="title class_">number</span> x;</span><br><span class="line"></span><br><span class="line"><span class="comment">//在C++中，可以说明为:</span></span><br><span class="line">boole done;</span><br><span class="line">string str;</span><br><span class="line">number x;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="void型指针"><a href="#void型指针" class="headerlink" title="void型指针"></a>void型指针</h2><p>​    void 通常表示无值，但将void作为指针的类型时，它却表示不确定的类型。这种void型指针是一种通用型指针，也就是说任何类型的指针值都可以赋给void类型的指针变量。</p>
+<p>​    void型指针可以接受任何类型的指针的赋值，但对已获值的void型指针，对它在进行处理，如输出或传递指针值时，则必须进行强制类型转换，否则会出错。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream.h&gt;</span></span></span><br><span class="line"><span class="built_in">main</span>()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">void</span> *pc;</span><br><span class="line">    <span class="type">int</span> i=<span class="number">456</span>;</span><br><span class="line">    <span class="type">char</span> c=<span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">    pc=&amp;i;</span><br><span class="line">    cout&lt;&lt;*(<span class="type">int</span> *)pc&lt;&lt;endl;</span><br><span class="line">    pc=&amp;c;</span><br><span class="line">    cout&lt;&lt;*(<span class="type">char</span> *)pc&lt;&lt;endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="C-对C的函数扩展"><a href="#C-对C的函数扩展" class="headerlink" title="C++对C的函数扩展"></a>C++对C的函数扩展</h1><h2 id="内联函数"><a href="#内联函数" class="headerlink" title="内联函数"></a>内联函数</h2><p>​    C++中推荐使用内联函数来替代宏代码片段，使用<strong>inline关键字</strong>声明内联函数。</p>
+<blockquote>
+<p>内联函数声明时inline关键字必须和函数定义结合在一起，否则编译器会直接忽略内联请求。</p>
+<p>例如：inline void printA();   这样的声明时不允许的，必须将整个函数结合。</p>
+<p>​            inline int  myFunc(int a, int b)</p>
+<p>​            {        return a &lt; b ?a:b;       }</p>
+</blockquote>
+<h3 id="内联函数与宏替换区别"><a href="#内联函数与宏替换区别" class="headerlink" title="内联函数与宏替换区别"></a>内联函数与宏替换区别</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;iostream&quot;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>  MYFUNC(a, b) ((a) &lt; (b) ? (a) : (b))       <span class="comment">//宏替换</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="type">int</span> <span class="title">myfunc</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b)</span>                               <span class="comment">//内联函数</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> a &lt; b ? a : b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="type">int</span> a = <span class="number">1</span>;</span><br><span class="line">	<span class="type">int</span> b = <span class="number">3</span>;</span><br><span class="line">	<span class="comment">//int c = myfunc(++a, b);     //a,b,c分别是2,3,2</span></span><br><span class="line">	<span class="type">int</span> c = <span class="built_in">MYFUNC</span>(++a, b);     <span class="comment">//a,b,c分别是3,3,3</span></span><br><span class="line"></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;a = %d\n&quot;</span>, a); </span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;b = %d\n&quot;</span>, b);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;c = %d\n&quot;</span>, c);</span><br><span class="line">    <span class="built_in">system</span>(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+<p>​    使用内联函数是<strong>直接把函数体中的代码替换已有语句</strong>，即实际myfunc(++a,b)中先执行”++a”,此时a &#x3D; 2，再执行”int c &#x3D; return a &lt; b ? a : b;”。b为3，a为2，所以c &#x3D; 2。使用宏替换是编译器机械式替换成：((++a) &lt; (b) ? (++a) : (b))，第一次自加后a的数值等于2，b等于3；条件为真，返回++a，此时a等于3，从而c等于3，c仍然等于3。</p>
+<p>​    使用内联函数必须注意下面几点：</p>
+<blockquote>
+<ol>
+<li><p>必须inline int myfunc(int a, int b)和函数体的实现，写在一块;</p>
+</li>
+<li><p>C++编译器直接将函数体插入到函数调用的地方，**内联函数没有普通函数调用时的额外开销(压栈，跳转，返回)**；</p>
+</li>
+<li><p>C++编译器不一定准许函数的内联请求；</p>
+</li>
+<li><p>内联函数是一种特殊的函数，<strong>具有普通函数的特征</strong>；</p>
+</li>
+</ol>
+<blockquote>
+<p><strong>内联函数是对编译器的一种请求</strong>，因此编译器可能拒绝这种请求；</p>
+<p><strong>内联函数由编译器处理</strong>，直接将编译后的函数体插入调用的地方；</p>
+<p>宏代码片段 由预处理器处理， 进行简单的文本替换，没有任何编译过程；</p>
+</blockquote>
+<ol start="5">
+<li>现代C++编译器能够进行编译优化，因此一些函数即使没有inline声明，也可能被编译器内联编译；</li>
+</ol>
+</blockquote>
+<p>​    C++中内联函数的限制：</p>
+<blockquote>
+<p>不能存在任何形式的循环语句;</p>
+<p>不能存在过多的条件判断语句;</p>
+<p>函数体不能过于庞大;</p>
+<p>不能对函数进行取址操作;</p>
+<p>函数内联声明必须在调用语句之前;</p>
+</blockquote>
+<hr>
+<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><ol>
+<li>内联函数在编译时直接将函数体插入函数调用的地方；</li>
+<li>inline只是一种请求，编译器不一定允许这种请求；</li>
+<li>内联函数省去了普通函数调用时压栈，跳转和返回的开销 ；</li>
+<li>内联函数相对于普通函数的优势只是省去了函数调用时压栈，跳转和返回的开销；</li>
+</ol>
+<p>注：当函数体的执行开销远大于压栈，跳转和返回所用的开销时，那么内联将无意义。</p>
+<hr>
+<h2 id="函数的默认参数"><a href="#函数的默认参数" class="headerlink" title="函数的默认参数"></a>函数的默认参数</h2><p>​     C++中可以在函数声明时为参数提供一个默认值，当函数调用时没有指定这个参数的值，编译器会自动用默认值代替。</p>
+<blockquote>
+<p>函数默认参数的规则：<br>          （1）只有参数列表后面部分的参数才可以提供默认参数值；<br>          （2）一旦在一个函数调用中开始使用默认参数值，那么这个参数后的所有参数都必须使用默认参数值；</p>
+</blockquote>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">myPrint</span><span class="params">(<span class="type">int</span> x = <span class="number">3</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;	cout&lt;&lt;<span class="string">&quot;x&quot;</span>&lt;&lt;x&lt;&lt;endl;    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//1 若填写参数,使用你填写的,不填写默认</span></span><br><span class="line"><span class="comment">//2 在默认参数规则 ，如果默认参数出现，那么右边的都必须有默认参数</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">myPrint2</span><span class="params">( <span class="type">int</span> m, <span class="type">int</span> n, <span class="type">int</span> x = <span class="number">3</span>, <span class="type">int</span> y = <span class="number">4</span>)</span></span></span><br><span class="line"><span class="function"><span class="comment">//void myPrint2( int m, int n, int x = 3, int y )  //错误，因为默认参数已经出现，右边必须为默认参数</span></span></span><br><span class="line"><span class="function"></span>&#123;	cout&lt;&lt;<span class="string">&quot;x&quot;</span>&lt;&lt;x&lt;&lt;endl;     &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;	</span><br><span class="line">	<span class="built_in">myPrint</span>(<span class="number">4</span>);            <span class="comment">//如果设置参数则用设置的参数，没有则选默认值</span></span><br><span class="line">	<span class="built_in">myPrint</span>(); </span><br><span class="line"></span><br><span class="line">	cout&lt;&lt;<span class="string">&quot;hello...&quot;</span>&lt;&lt;endl;</span><br><span class="line">	<span class="built_in">system</span>(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="函数的占位参数"><a href="#函数的占位参数" class="headerlink" title="函数的占位参数"></a>函数的占位参数</h2><p>​    占位参数<strong>只有参数类型声明</strong>，而没有参数名声明，一般情况下，在函数体内部无法使用占位参数。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//函数占位参数 函数调用是,必须写够参数</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">func1</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b, <span class="type">int</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;	cout&lt;&lt;<span class="string">&quot;a&quot;</span>&lt;&lt;a&lt;&lt;<span class="string">&quot; b&quot;</span>&lt;&lt;b&lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> main_占位参数()</span><br><span class="line">&#123;	</span><br><span class="line">	<span class="comment">//func1(1, 2); //err调用不起来</span></span><br><span class="line">	<span class="built_in">func1</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</span><br><span class="line">	cout&lt;&lt;<span class="string">&quot;hello...&quot;</span>&lt;&lt;endl;</span><br><span class="line">	<span class="built_in">system</span>(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="默认参数和占位参数结合"><a href="#默认参数和占位参数结合" class="headerlink" title="默认参数和占位参数结合"></a>默认参数和占位参数结合</h3><p>​    可以将占位参数与默认参数结合起来使用意义：<br>                   1. 为以后程序的扩展留下线索；<br>                            2. 兼容C语言程序中可能出现的不规范写法；</p>
+<p>C++可以声明占位符参数，占位符参数一般用于程序扩展和对C代码的兼容。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span>  <span class="title">func2</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b, <span class="type">int</span> =<span class="number">0</span>)</span>   <span class="comment">//占位参数设置默认值</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	cout&lt;&lt;<span class="string">&quot;a=&quot;</span>&lt;&lt;a&lt;&lt;<span class="string">&quot;;b=&quot;</span>&lt;&lt;b&lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">func2</span>(<span class="number">1</span>, <span class="number">2</span>);       <span class="comment">//0k  </span></span><br><span class="line">	<span class="built_in">func2</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);      <span class="comment">//ok</span></span><br><span class="line">	</span><br><span class="line">	cout&lt;&lt;<span class="string">&quot;hello...&quot;</span>&lt;&lt;endl;</span><br><span class="line">	<span class="built_in">system</span>(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="函数重载"><a href="#函数重载" class="headerlink" title="函数重载"></a>函数重载</h2><p>​    后序章节会详细介绍。</p>
+<h2 id="结论-1"><a href="#结论-1" class="headerlink" title="结论"></a>结论</h2><blockquote>
+<ul>
+<li>函数原型的参数表中可不包含参数的名字，而只包含它们的类型。例如：long Area(int ,int);</li>
+<li>函数定义由函数首部和函数体构成。函数首部和函数原型基本一样，但函数首部中的参数必须给出名字而且不包含结尾的分号。</li>
+<li>Cpp的参数说明必须放在函数说明后的括号内，不可将函数参数说明放在函数首部和函数体之间。这种方法只在C中成立。</li>
+<li>主函数不必进行原型说明，因为它被看成自动说明原型的函数。</li>
+<li>原型说明中没有指定返回类型的函数(包括主函数main)，Cpp默认该函数的返回类型是int。</li>
+<li>如果一个函数没有返回值，则必须在函数原型中注明返回类型为void，主函数类似处理。</li>
+<li>如果函数原型中未注明参数，Cpp假定该函数的参数表为空(void)。</li>
+</ul>
+</blockquote>
+<hr>
+<h1 id="C-模型初探"><a href="#C-模型初探" class="headerlink" title="C++模型初探"></a>C++模型初探</h1><p>​    在C语言中，“<strong>数据”</strong>和“**处理数据的操作(函数)**”是分开声明的，也就是说语言本身并不支持“数据和函数”之间的关联性。但是C++语言通过抽象数据类型（ADT）在类中定义数据和函数，从而实现了数据和函数的直接绑定。</p>
+<p>​    C++中的class从面向对象理论出发，将变量(属性)和函数(方法)集中定义在一起，用于描述现实世界中的类。<strong>从计算机的角度，程序依然由数据段和代码段构成。</strong></p>
+<blockquote>
+<p>概括来说，在C++类中有：</p>
+<p>​                  两种成员数据：static、nonstatic；</p>
+<p>​                  三种成员函数：static、nonstatic、virtual。</p>
+</blockquote>
+<p>​    具体对象调用类中的方法，那，c++编译器是如何区分，是那个具体的类，调用这个方法那? </p>
+<blockquote>
+<p>1） C++类对象中的成员变量和成员函数是分开存储的，C语言中的内存四区模型依然有效。</p>
+<p>成员变量：</p>
+<p>​        普通成员变量：<strong>存储于对象中</strong>，与struct变量有相同的内存布局和字节对齐方式；</p>
+<p>​        静态成员变量：<strong>存储于全局数据区中</strong>；</p>
+<p>成员函数： <strong>存储于代码段中</strong>；</p>
+</blockquote>
+<p>​    提问：很多对象共用一块代码？代码是如何区分具体对象的？</p>
+<blockquote>
+<p>通过this指针(一个指向自己的数据类型的指针)进行区分。C++的这个模型到最后也是建立在面向过程的基础上的，在此基础上做了一层封装机制实现了面向对象。每个对象执行函数是都指向自己的this指针，从而通过this指针确定是哪个对象。</p>
+</blockquote>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>C++类对象中的成员变量和成员函数是分开存储的，C语言中的内存四区模型仍然有效！</li>
+<li>C++中类的普通成员函数都隐式包含一个指向当前对象的this指针；</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Barret</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2021/07/10/C++/C++%E5%AF%B9C%E7%9A%84%E6%89%A9%E5%B1%95/">http://example.com/2021/07/10/C++/C++%E5%AF%B9C%E7%9A%84%E6%89%A9%E5%B1%95/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">Barret Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/07/11/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/const%E9%99%90%E5%AE%9A%E7%AC%A6/"><img class="prev-cover" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">const限定符</div></div></a></div><div class="next-post pull-right"><a href="/2021/07/10/C++/%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1/"><img class="next-cover" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">类和对象</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F14206928472%2F1000.jpg&amp;refer=http%3A%2F%2Finews.gtimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650157497&amp;t=70dfbdc4919a4e744f090628aaf5059d" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Barret</div><div class="author-info__description">Welcome Visit</div></div><div class="card-info-data is-center"><div class="card-info-data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a></div><div class="card-info-data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a></div><div class="card-info-data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/anyeyueren" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:2412704562@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#C%E8%AF%AD%E8%A8%80%E7%9A%84%E5%B1%80%E9%99%90%E6%80%A7"><span class="toc-number">1.</span> <span class="toc-text">C语言的局限性</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E4%BC%98%E7%82%B9"><span class="toc-number">1.1.</span> <span class="toc-text">C++优点</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#C-%E5%AF%B9C%E7%9A%84%E6%89%A9%E5%B1%95"><span class="toc-number">2.</span> <span class="toc-text">C++对C的扩展</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E8%AF%AD%E6%B3%95"><span class="toc-number">2.1.</span> <span class="toc-text">C++命名空间语法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#namespace"><span class="toc-number">2.1.1.</span> <span class="toc-text">namespace</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#std%E5%90%AB%E4%B9%89"><span class="toc-number">2.1.2.</span> <span class="toc-text">std含义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C%E4%B8%8EC-%E4%B8%AD%E7%9A%84%E5%91%BD%E4%BB%A4%E7%A9%BA%E9%97%B4"><span class="toc-number">2.1.3.</span> <span class="toc-text">C与C++中的命令空间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E5%91%BD%E4%BB%A4%E7%A9%BA%E9%97%B4%E4%BD%BF%E7%94%A8"><span class="toc-number">2.1.4.</span> <span class="toc-text">C++命令空间使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E8%A6%81%E7%BB%93%E8%AE%BA"><span class="toc-number">2.1.5.</span> <span class="toc-text">重要结论</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#iostream%E4%B8%8Eiostream-h%E5%8C%BA%E5%88%AB"><span class="toc-number">2.1.6.</span> <span class="toc-text">iostream与iostream.h区别</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#register%E5%85%B3%E9%94%AE%E5%AD%97%E5%A2%9E%E5%BC%BA"><span class="toc-number">2.2.</span> <span class="toc-text">register关键字增强</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%98%E9%87%8F%E6%A3%80%E6%B5%8B%E5%A2%9E%E5%BC%BA"><span class="toc-number">2.3.</span> <span class="toc-text">变量检测增强</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#struct%E7%B1%BB%E5%9E%8B%E5%A2%9E%E5%BC%BA"><span class="toc-number">2.4.</span> <span class="toc-text">struct类型增强</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%9E%8B%E5%BC%BA%E6%8C%87%E5%AE%9A"><span class="toc-number">2.5.</span> <span class="toc-text">类型强指定</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E4%B8%AD%E6%96%B0%E5%A2%9Ebool%E7%B1%BB%E5%9E%8B%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">2.6.</span> <span class="toc-text">C++中新增bool类型关键字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E7%9B%AE%E8%BF%90%E7%AE%97%E7%AC%A6%E5%8A%9F%E8%83%BD%E5%A2%9E%E5%BC%BA"><span class="toc-number">2.7.</span> <span class="toc-text">三目运算符功能增强</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%81"><span class="toc-number">2.8.</span> <span class="toc-text">输入输出流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%AC%A6dec%E3%80%81-hex%E5%92%8Coct%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">2.9.</span> <span class="toc-text">操作符dec、 hex和oct的使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%81%B5%E6%B4%BB%E7%9A%84%E5%8F%98%E9%87%8F%E8%AF%B4%E6%98%8E"><span class="toc-number">2.10.</span> <span class="toc-text">灵活的变量说明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E6%9E%84%E3%80%81%E8%81%94%E5%90%88%E5%92%8C%E6%9E%9A%E4%B8%BE%E5%90%8D"><span class="toc-number">2.11.</span> <span class="toc-text">结构、联合和枚举名</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#void%E5%9E%8B%E6%8C%87%E9%92%88"><span class="toc-number">2.12.</span> <span class="toc-text">void型指针</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#C-%E5%AF%B9C%E7%9A%84%E5%87%BD%E6%95%B0%E6%89%A9%E5%B1%95"><span class="toc-number">3.</span> <span class="toc-text">C++对C的函数扩展</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E8%81%94%E5%87%BD%E6%95%B0"><span class="toc-number">3.1.</span> <span class="toc-text">内联函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E8%81%94%E5%87%BD%E6%95%B0%E4%B8%8E%E5%AE%8F%E6%9B%BF%E6%8D%A2%E5%8C%BA%E5%88%AB"><span class="toc-number">3.1.1.</span> <span class="toc-text">内联函数与宏替换区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA"><span class="toc-number">3.1.2.</span> <span class="toc-text">结论</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E7%9A%84%E9%BB%98%E8%AE%A4%E5%8F%82%E6%95%B0"><span class="toc-number">3.2.</span> <span class="toc-text">函数的默认参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E7%9A%84%E5%8D%A0%E4%BD%8D%E5%8F%82%E6%95%B0"><span class="toc-number">3.3.</span> <span class="toc-text">函数的占位参数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%BB%98%E8%AE%A4%E5%8F%82%E6%95%B0%E5%92%8C%E5%8D%A0%E4%BD%8D%E5%8F%82%E6%95%B0%E7%BB%93%E5%90%88"><span class="toc-number">3.3.1.</span> <span class="toc-text">默认参数和占位参数结合</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E9%87%8D%E8%BD%BD"><span class="toc-number">3.4.</span> <span class="toc-text">函数重载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA-1"><span class="toc-number">3.5.</span> <span class="toc-text">结论</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#C-%E6%A8%A1%E5%9E%8B%E5%88%9D%E6%8E%A2"><span class="toc-number">4.</span> <span class="toc-text">C++模型初探</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">4.1.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%B8%83)/" title="进程同步和信号量"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="进程同步和信号量"/></a><div class="content"><a class="title" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%B8%83)/" title="进程同步和信号量">进程同步和信号量</a><time datetime="2021-11-24T22:04:16.000Z" title="发表于 2021-11-25 06:04:16">2021-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/" title="信号量临界区保护"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="信号量临界区保护"/></a><div class="content"><a class="title" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/" title="信号量临界区保护">信号量临界区保护</a><time datetime="2021-11-24T22:04:16.000Z" title="发表于 2021-11-25 06:04:16">2021-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/29/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AD)/" title="CPU调度策略"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CPU调度策略"/></a><div class="content"><a class="title" href="/2021/10/29/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AD)/" title="CPU调度策略">CPU调度策略</a><time datetime="2021-10-28T22:04:16.000Z" title="发表于 2021-10-29 06:04:16">2021-10-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/" title="内核级线程"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="内核级线程"/></a><div class="content"><a class="title" href="/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/" title="内核级线程">内核级线程</a><time datetime="2021-10-24T22:04:16.000Z" title="发表于 2021-10-25 06:04:16">2021-10-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/17/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" title="智能指针"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="智能指针"/></a><div class="content"><a class="title" href="/2021/10/17/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" title="智能指针">智能指针</a><time datetime="2021-10-16T22:04:16.000Z" title="发表于 2021-10-17 06:04:16">2021-10-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By Barret</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

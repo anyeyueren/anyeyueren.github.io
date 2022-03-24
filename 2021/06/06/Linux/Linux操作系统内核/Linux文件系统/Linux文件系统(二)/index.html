@@ -1,0 +1,421 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Linux文件系统(二) | Barret Blog</title><meta name="keywords" content="IT"><meta name="author" content="Barret"><meta name="copyright" content="Barret"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Linux系统目录结构​    Linux 系统下面的根目录是 &#x2F; ，它通常包含了多个子目录。FHS 针对目录树架构仅定义出三层目录底下应该放置什么数据：  &#x2F; (root, 根目录)：与开机系统有关； &#x2F;usr (unix software resource)：与软件安装&#x2F;执行有关； &#x2F;var (variable)：与系统运作过程有关；  根目录   目录">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux文件系统(二)">
+<meta property="og:url" content="http://example.com/2021/06/06/Linux/Linux%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/Linux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/Linux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F(%E4%BA%8C)/index.html">
+<meta property="og:site_name" content="Barret Blog">
+<meta property="og:description" content="Linux系统目录结构​    Linux 系统下面的根目录是 &#x2F; ，它通常包含了多个子目录。FHS 针对目录树架构仅定义出三层目录底下应该放置什么数据：  &#x2F; (root, 根目录)：与开机系统有关； &#x2F;usr (unix software resource)：与软件安装&#x2F;执行有关； &#x2F;var (variable)：与系统运作过程有关；  根目录   目录">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650272949&t=18f99d2e597ef4e5080a0e7cdc68b6e1">
+<meta property="article:published_time" content="2021-06-06T12:04:16.000Z">
+<meta property="article:modified_time" content="2022-03-22T03:30:04.268Z">
+<meta property="article:author" content="Barret">
+<meta property="article:tag" content="IT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650272949&t=18f99d2e597ef4e5080a0e7cdc68b6e1"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2021/06/06/Linux/Linux%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/Linux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/Linux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F(%E4%BA%8C)/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":50},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Linux文件系统(二)',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-03-22 11:30:04'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.0.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F14206928472%2F1000.jpg&amp;refer=http%3A%2F%2Finews.gtimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650157497&amp;t=70dfbdc4919a4e744f090628aaf5059d" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><div class="data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a></div><div class="data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a></div><div class="data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Barret Blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Linux文件系统(二)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-06-06T12:04:16.000Z" title="发表于 2021-06-06 20:04:16">2021-06-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-03-22T03:30:04.268Z" title="更新于 2022-03-22 11:30:04">2022-03-22</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Linux文件系统(二)"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="Linux系统目录结构"><a href="#Linux系统目录结构" class="headerlink" title="Linux系统目录结构"></a>Linux系统目录结构</h1><p>​    Linux 系统下面的根目录是 <code>/</code> ，它通常包含了多个子目录。FHS 针对目录树架构仅定义出三层目录底下应该放置什么数据：</p>
+<ul>
+<li>&#x2F; (root, 根目录)：与开机系统有关；</li>
+<li>&#x2F;usr (unix software resource)：与软件安装&#x2F;执行有关；</li>
+<li>&#x2F;var (variable)：与系统运作过程有关；</li>
+</ul>
+<h2 id="根目录"><a href="#根目录" class="headerlink" title="根目录"></a>根目录</h2><table>
+<thead>
+<tr>
+<th>目录名</th>
+<th>存储内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&#x2F;bin</td>
+<td>是重要的二进制应用程序，包含二进制文件，系统的所有用户使用的命令都在这里；cat, chmod, chown, date, mv, mkdir,cp, bash 等等常用的指令；</td>
+</tr>
+<tr>
+<td>&#x2F;boot</td>
+<td>启动包含引导加载程序的相关文件;</td>
+</tr>
+<tr>
+<td>&#x2F;dev</td>
+<td>包含设备文件，终端文件，USB 或者连接到系统的任何设备;</td>
+</tr>
+<tr>
+<td>&#x2F;etc</td>
+<td>配置文件，启动脚本等，包含所有程序所需要的配置文件，也包含了启动&#x2F;停止单个应用程序的启动和关闭 shell 脚本;</td>
+</tr>
+<tr>
+<td>&#x2F;home</td>
+<td>本地主要路径，所有用户用 home 目录存储个人信息；</td>
+</tr>
+<tr>
+<td>&#x2F;lib</td>
+<td>系统库文件，包含支持位于 &#x2F;bin 和 &#x2F;sbin 下的二进制库文件；</td>
+</tr>
+<tr>
+<td>&#x2F;lost+found</td>
+<td>在根目录下提供一个遗失+查找系统，必须在 root 用户下才能查看当前目录下的内容，目的在于当文件系统发生错误时， 将一些遗失的片段放置到这个目录下。不过如果使用的是 xfs 文件系统的话，就不会存在这个目录了；</td>
+</tr>
+<tr>
+<td>&#x2F;media</td>
+<td>这个目录下面放置的就是可移除的设备，包括软盘、光盘、DVD 等等装置都暂时挂载于此；</td>
+</tr>
+<tr>
+<td>&#x2F;mnt</td>
+<td>挂载文件系统；</td>
+</tr>
+<tr>
+<td>&#x2F;opt</td>
+<td>提供一个可选的应用程序安装目录，这个是给第三方软件放置的目录；</td>
+</tr>
+<tr>
+<td><strong>&#x2F;proc</strong></td>
+<td>特殊的动态目录，用于维护系统信息和状态，包括当前运行中进程信息，这个目录本身是一个虚拟文件系统，放置的数据都是在内存当中，例如系统的核心、进程信息等等。因为目录下的数据都是在内存当中，<strong>本身并不占用任何硬盘空间</strong>。例如：&#x2F;proc&#x2F;cpuinfo, &#x2F;proc&#x2F;dma, &#x2F;proc&#x2F;interrupts, &#x2F;proc&#x2F;ioports, &#x2F;proc&#x2F;net&#x2F;</td>
+</tr>
+<tr>
+<td>&#x2F;root</td>
+<td>root 用户的主要目录文件夹；</td>
+</tr>
+<tr>
+<td>&#x2F;sbin</td>
+<td>重要的二进制系统文件；</td>
+</tr>
+<tr>
+<td>&#x2F;tmp</td>
+<td>系统和用户创建的临时文件，系统重启时，这个目录下的文件都会被删除；</td>
+</tr>
+<tr>
+<td>&#x2F;usr</td>
+<td>包含绝大多数用户都能访问的应用程序和文件；</td>
+</tr>
+<tr>
+<td>&#x2F;var</td>
+<td>经常变化的文件，诸如日志文件或数据库等；</td>
+</tr>
+<tr>
+<td>&#x2F;sys</td>
+<td>主要也是记录核心与系统硬件信息较相关的信息，也是一个虚拟文件系统；</td>
+</tr>
+</tbody></table>
+<p>​    需要注意的是下面这五个目录不可与根目录分开放在不同的分区。</p>
+<blockquote>
+<ul>
+<li><p>&#x2F;etc：配置文件；</p>
+</li>
+<li><p>&#x2F;bin：重要执行文件；</p>
+</li>
+<li><p>&#x2F;dev：所需要的设备文件；</p>
+</li>
+<li><p>&#x2F;lib：执行文件所需的函数库和内核所需的模块；</p>
+</li>
+<li><p>&#x2F;sbin：重要的系统执行文件；</p>
+</li>
+</ul>
+</blockquote>
+<h2 id="x2F-usr含义"><a href="#x2F-usr含义" class="headerlink" title="&#x2F;usr含义"></a>&#x2F;usr含义</h2><p>​    usr 是Unix Software Resource 的缩写，HS 建议所有软件开发者，应该将他们的数据合理的分别放置到这个目录下的次目录，而不要自行建立该软件自己独立的目录。</p>
+<blockquote>
+<p>因为是所有系统默认的软件(distribution 发布者提供的软件)都会放置到&#x2F;usr 底下，因此这个目录有点类似Windows 系统的『C:\Windows\ + C:\Program files\』这两个目录的综合体。</p>
+</blockquote>
+<h2 id="x2F-var含义"><a href="#x2F-var含义" class="headerlink" title="&#x2F;var含义"></a>&#x2F;var含义</h2><p>​    如果&#x2F;usr 是安装时会占用较大硬盘容量的目录，那么&#x2F;var 就是在系统运作后才会渐渐占用硬盘容量的目录。因为&#x2F;var 目录主要针对常态性变动的文件，包括缓存(cache)、登录文件(log file)以及某些软件运作所产生的文件， 包括程序文件(lock file, run file)，或者例如MySQL 数据库的文件等等。</p>
+<hr>
+<h1 id="文件的存储"><a href="#文件的存储" class="headerlink" title="文件的存储"></a>文件的存储</h1><p>​    文件的数据是要存储在硬盘上面的，数据在磁盘上的存放方式，就像程序在内存中存放的方式那样，有<strong>连续空间存放方式</strong>和<strong>非连续空间存放方式</strong>。其中非连续空间存放方式还分为：<strong>链表方式</strong>和<strong>索引方式</strong>。</p>
+<h2 id="连续空间存放方式"><a href="#连续空间存放方式" class="headerlink" title="连续空间存放方式"></a>连续空间存放方式</h2><p>​    连续空间存放方式顾名思义，<strong>文件存放在磁盘「连续的」物理空间中</strong>。这种模式下，文件的数据都是紧密相连，<strong>读写效率很高</strong>，因为一次磁盘寻道就可以读出整个文件。</p>
+<p>​    使用连续存放的方式有一个前提，必须先知道一个文件的大小，这样文件系统才会根据文件的大小在磁盘上找到一块连续的空间分配给文件。所以，<strong>文件头里需要指定「起始块的位置」和「长度」</strong>，有了这两个信息就可以很好的表示文件存放方式是一块连续的磁盘空间。</p>
+<p>​    连续空间存放的方式虽然读写效率高，但是有<strong>「磁盘空间碎片」</strong>和<strong>「文件长度不易扩展」</strong>的缺陷。如果文件 B 被删除，磁盘上就留下一块空缺，这时，如果新来的文件小于其中的一个空缺，我们就可以将其放在相应空缺里。但如果该文件的大小大于所有的空缺，但却小于空缺大小之和，则虽然磁盘上有足够的空缺，但该文件还是不能存放。（可以通过将现有文件进行挪动来腾出空间以容纳新的文件，但是这个在磁盘挪动文件是非常耗时，所以这种方式不太现实）</p>
+<p>​    另外一个缺陷是文件长度扩展不方便。<br><img src="https://cdn.jsdelivr.net/gh/anyeyueren/picgoimg/studyImg/连续存储.jpg" style="zoom:50%;" /></p>
+<h2 id="非连续空间存放方式"><a href="#非连续空间存放方式" class="headerlink" title="非连续空间存放方式"></a>非连续空间存放方式</h2><h3 id="链表方式"><a href="#链表方式" class="headerlink" title="链表方式"></a>链表方式</h3><p>​    链表的方式存放是<strong>离散的，不用连续的</strong>，于是就可以<strong>消除磁盘碎片</strong>，可大大提高磁盘空间的利用率，同时<strong>文件的长度可以动态扩展</strong>。根据实现的方式的不同，链表可分为「<strong>隐式链表</strong>」和「<strong>显式链接</strong>」两种形式。</p>
+<h4 id="隐式链表"><a href="#隐式链表" class="headerlink" title="隐式链表"></a>隐式链表</h4><p>​    文件要以「<strong>隐式链表</strong>」的方式存放的话，<strong>实现的方式是文件头要包含「第一块」和「最后一块」的位置，并且每个数据块里面留出一个指针空间，用来存放下一个数据块的位置</strong>，这样一个数据块连着一个数据块，从链头开是就可以顺着指针找到所有的数据块，所以存放的方式可以是不连续的。(这就跟数据结构中的链表一样的)</p>
+<blockquote>
+<p>隐式链表的存放方式的<strong>缺点在于无法直接访问数据块，只能通过指针顺序访问文件，以及数据块指针消耗了一定的存储空间</strong>。隐式链接分配的<strong>稳定性较差</strong>，系统在运行过程中由于软件或者硬件错误<strong>导致链表中的指针丢失或损坏，会导致文件数据的丢失</strong>。</p>
+</blockquote>
+<img src="https://pic2.zhimg.com/80/v2-b3d581a3d561f3386a497d5622180c81_720w.jpg" alt="img" style="zoom:67%;" />
+
+<h4 id="显示链接"><a href="#显示链接" class="headerlink" title="显示链接"></a>显示链接</h4><p>​    如果将每个磁盘块中的指针放在内存的一个表中，那么就可以有效解决隐式链表的不足。它<strong>把用于链接文件各数据块的指针，显式地存放在内存的一张链接表中</strong>，该表在整个磁盘仅设置一张，<strong>每个表项中存放链接指针，指向下一个数据块号</strong>。</p>
+<img src="https://pic3.zhimg.com/80/v2-848b55299135f1775cb9fa5e6f9f9272_720w.jpg" alt="img" style="zoom: 67%;" />
+
+<blockquote>
+<p>举个例子：文件 A 依次使用了磁盘块 4、7、2、10 和 12 ，文件 B 依次使用了磁盘块 6、3、11 和 14 。利用下图中的表，可以从第 4 块开始，顺着链走到最后，找到文件 A 的全部磁盘块。同样，从第 6 块开始，顺着链走到最后，也能够找出文件 B 的全部磁盘块。最后，这两个链都以一个不属于有效磁盘编号的特殊标记（如 -1 ）结束。</p>
+</blockquote>
+<p>​    内存中的这样一个表格称为<strong>文件分配表</strong>（File Allocation Table，FAT），不仅显著地<strong>提高了检索速度</strong>，而且<strong>大大减少了访问磁盘的次数</strong>。但也正是整个表都存放在内存中的关系，它的主要的缺点是<strong>不适用于大磁盘</strong>。</p>
+<hr>
+<h3 id="索引方式"><a href="#索引方式" class="headerlink" title="索引方式"></a>索引方式</h3><p>​    索引的实现是为每个文件创建一个「<strong>索引数据块</strong>」，里面存放的是<strong>指向文件数据块的指针列表</strong>，说白了就像书的目录一样，要找哪个章节的内容，看目录查就可以。</p>
+<p><img src="https://pic3.zhimg.com/80/v2-1e6d2ef6d8782117779143843798b79e_720w.jpg" alt="img"></p>
+<p>​    如图中所示，<strong>文件头需要包含指向「索引数据块」的指针</strong>，这样就可以通过文件头知道索引数据块的位置，再通过索引数据块里的索引信息找到对应的数据块。创建文件时，索引块中所有的指针都设置为空，当首次写入第i块时，先从空闲空间中取得一个块，再将其地址写到索引块的第i个条目。</p>
+<blockquote>
+<p>索引方式的优点在于：</p>
+<ul>
+<li>文件的创建、增大、缩小很方便；</li>
+<li>不存在碎片问题；</li>
+<li>支持顺序读写和随机读取；</li>
+</ul>
+</blockquote>
+<hr>
+<p>​    当文件很大，大到一个索引数据块放不下索引信息，这时又要如何处理大文件的存放？这时可以通过组合方式处理大文件内存。有链表 + 索引的组合，这种组合称为「<strong>链式索引块</strong>」；以及索引 + 索引的方式，这种组合称为「<strong>多级索引块</strong>」。</p>
+<h4 id="链式索引块"><a href="#链式索引块" class="headerlink" title="链式索引块"></a>链式索引块</h4><p>​    它的实现方式是<strong>在索引数据块留出一个存放下一个索引数据块的指针</strong>，于是当一个索引数据块的索引信息用完了，就可以通过指针的方式，找到下一个索引数据块的信息。（这种方式也会出现前面提到的链表方式的问题，万一某个指针损坏了，后面的数据也就会无法读取了）</p>
+<p><img src="https://pic3.zhimg.com/v2-ede534663e1c19169eb40cbe01384da2_r.jpg" alt="preview"></p>
+<h4 id="多级索引块"><a href="#多级索引块" class="headerlink" title="多级索引块"></a>多级索引块</h4><p>​    多级索引块采用的是多级索引的方式，实现方式是通过一个索引块来存放多个索引数据块，一层套一层。</p>
+<p><img src="https://pic1.zhimg.com/80/v2-fb7d558d7b1d2d48fa4544adbead57bc_720w.jpg" alt="img"></p>
+<h2 id="linux文件系统"><a href="#linux文件系统" class="headerlink" title="linux文件系统"></a>linux文件系统</h2><p>​    先来看下几种文件实现方式的比较：</p>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>访问磁盘次数</th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>顺序分配</td>
+<td>需访问磁盘1次</td>
+<td>顺序存取速度快，当文件是 定长时可以根据文件起始地址及记录长度进行随机访问</td>
+<td>要求连续的存储空间，会产生外部碎片，不利于文件的动态扩充</td>
+</tr>
+<tr>
+<td>链表分配</td>
+<td>需访问磁盘n次</td>
+<td>无外部碎片，提高了外存空间利用率，动态增长较方便</td>
+<td>只能按照文件的指针顺序访问，查找效率低，指针信息存放消耗内存或磁盘空间</td>
+</tr>
+<tr>
+<td>索引分配</td>
+<td>m级需访问磁盘m+1次</td>
+<td>可以随机访问，易于文件的增删</td>
+<td>索引表增加存储空间开销，索引表的查找策略对文件系统效率影响大</td>
+</tr>
+</tbody></table>
+<p>​    Unix文件系统组合了这些文件存放方式的优点：</p>
+<blockquote>
+<ul>
+<li>如果存放文件所需的数据块小于 10 块，则采用直接查找的方式；</li>
+<li>如果存放文件所需的数据块超过 10 块，则采用一级间接索引方式；</li>
+<li>如果前面两种方式都不够存放大文件，则采用二级间接索引方式；</li>
+<li>如果二级间接索引也不够存放大文件，这采用三级间接索引方式；</li>
+</ul>
+</blockquote>
+<p>​    综合这些信息可以得知文件头(Inode)就需要包含13个指针：前10个指向数据块的指针；第11个指针指向索引块的指针；第12个指针指向二级索引块的指针；第13个指向三级索引块的指针。</p>
+<p>​    所以这种方式可以灵活的支持小文件和大文件的存放：对于小文件使用直接查找的方式可以减少索引数据块的开销，对于大文件则以多级索引的方式来支持，所以大文件在访问数据块时需要大量查询。</p>
+<blockquote>
+<p>这个方案就用在了 Linux Ext 2&#x2F;3 文件系统里，虽然解决大文件的存储，但是对于大文件的访问，需要大量的查询，效率比较低。为了解决这个问题，Ext 4 做了一定的改变，此处没有做太深入研究。</p>
+</blockquote>
+<hr>
+<h1 id="空闲空间管理"><a href="#空闲空间管理" class="headerlink" title="空闲空间管理"></a>空闲空间管理</h1><p>​    前面说到的文件的存储是针对<strong>已经被占用的数据块组织和管理</strong>，接下来的问题是，如果我要保存一个数据块，我应该放在硬盘上的哪个位置呢？如果将所有的块扫描一遍找个空地方随便放效率就太低了，所以针对次磁盘的空闲空间也要引入管理机制。</p>
+<p>​    常见的处理方法有下面几种：</p>
+<ul>
+<li><strong>空闲表法</strong>；</li>
+<li><strong>空闲链表法</strong>；</li>
+<li><strong>位图法</strong>；</li>
+</ul>
+<h2 id="空闲表法"><a href="#空闲表法" class="headerlink" title="空闲表法"></a>空闲表法</h2><p>​    空闲表法就是为所有空闲空间创建一张表，表内容包括空闲区的第一个块号和该空闲区域的块的个数，这种方式是连续分配的。下图中序号1对应的是从2号空闲块开始连续3个空闲块，序号2对应的是从8号空闲块开始的连续3个连续空闲块……</p>
+<p>​    当请求分配磁盘空间时，系统依次扫描空闲表里的内容，直到找到合适的空闲区域为止。当用户撤销一个文件时，系统回收文件空间。此时需要顺序扫描空闲表从而找到一个条目将释放的这块空间第一个物理块以及所占用的块数填到整个条目中。</p>
+<p><img src="https://pic3.zhimg.com/80/v2-1ec1e7e0b313a92e0028691ae97c9766_720w.jpg" alt="img"></p>
+<blockquote>
+<p>这种方法仅当有少量的空闲区时才有较好的效果。因为，如果存储空间中有着大量的小的空闲区，则空闲表变得很大，这样查询效率会很低。另外，这种分配技术适用于建立连续文件。</p>
+</blockquote>
+<hr>
+<h2 id="空闲链表法"><a href="#空闲链表法" class="headerlink" title="空闲链表法"></a>空闲链表法</h2><p>​    我们也可以使用「链表」的方式来管理空闲空间，每一个空闲块里有一个指针指向下一个空闲块，这样也能很方便的找到空闲块并管理起来。当创建文件需要一块或者多块时，就从链表头上依次取下一块或者几块。反之，当回收空间时，把这些空间块依次接到</p>
+<p><img src="https://pic3.zhimg.com/80/v2-a14c65a4ec2fbb470fba728b818a6d22_720w.jpg" alt="img"></p>
+<blockquote>
+<p>这种技术只要在主存中保存一个指针，令它指向第一个空闲块。其特点是简单，但不能随机访问，工作效率低，因为每当在链上增加或移动空闲块时需要做很多 I&#x2F;O 操作，同时数据块的指针消耗了一定的存储空间。</p>
+</blockquote>
+<p>​    空闲表法和空闲链表法都不适合用于大型文件系统，因为这会使空闲表或空闲链表太大。</p>
+<hr>
+<h2 id="位图法"><a href="#位图法" class="headerlink" title="位图法"></a>位图法</h2><h3 id="块位图"><a href="#块位图" class="headerlink" title="块位图"></a>块位图</h3><p>​    在 Linux 文件系统就采用了位图的方式来管理空闲空间，不仅用于数据空闲块的管理，还用于 inode 空闲块的管理，因为 inode 也是存储在磁盘的。位图是利用二进制的一位来表示磁盘中一个盘块的使用情况，磁盘上所有的盘块都有一个二进制位与之对应。</p>
+<p>​    文件在硬盘看来实际上就是一堆二进制数据，现在想要将这些二进制数据存储到硬盘当中。为了方便分析先不考虑复杂的扇区、设备驱动等内容。现在假设硬盘大小为1MB，每个块的大小为两个物理扇区，即1024字节（1KB）。这么一来 这块硬盘就是1024个块。</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_jpg/GLeh42uInXRPpGdb1rLVOuU9fgMuLiaDfkHibk00PpYTMhgbwniamDKiarXxAU0oibicgXTjeznytfHdJZJR7a2PTl2w/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<p>​    现在在硬盘上随便选取一个3号块将文件放进去，但是如果再存入一个文件有可能会再次选到3号块从而导致原来存的文件被覆盖，所以需要找到一个地方记录各个块的使用情况。如果现在使用0号块来记录各个块的使用情况：</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_gif/GLeh42uInXRPpGdb1rLVOuU9fgMuLiaDfRruNoC8sYKTcib1ibOYFzGlLtYBphS1U3fnavQY1vasqjw4EG6IkrGfQ/640?wx_fmt=gif&tp=webp&wxfrom=5&wx_lazy=1" alt="图片"></p>
+<p>​    给块 0 起个名字，叫<strong>块位图</strong>，之后这个块 0 就专门用来记录所有块的使用情况，不再用来存具体文件了。当我们再存入一个新文件时，只需要在块位图中找到第一个为 0 的位，就可以找到第一个还未被使用的块，将文件存入。同时，别忘了把块位图中的相应位置 1。</p>
+<hr>
+<h1 id="文件读取"><a href="#文件读取" class="headerlink" title="文件读取"></a>文件读取</h1><p>​    承接上面的位图法，如果想读取存入的文件内容该如何操作呢？肯定不能根据块号进行操作，所以需要给每个文件起个名字，叫做这个文件的<strong>文件名</strong>。通过这个文件名可以找到这个文件。</p>
+<h2 id="inode位图"><a href="#inode位图" class="headerlink" title="inode位图"></a>inode位图</h2><p>​    到这里那必然需要找个地方来记录<strong>文件名</strong>和<strong>块号</strong>对应关系，既然都要记录文件名了，那可以多记录一些内容：文件大小、文件创建时间、文件权限……选取一个128字节大小的空间来表示这些信息，并保存在硬盘上。便把这个128字节的结构体叫做<strong>inode</strong>。</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_jpg/GLeh42uInXRPpGdb1rLVOuU9fgMuLiaDfXh1ic04TbyrJJ8tjpSWGDnsStYz6Diazzibg6keU2nJdODg5XAq6IZ8eQ/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<p>​    之后在每存入一个新文件时，需要一个块记录文件本身，还需要占用一个inode来存放文件的<strong>元信息</strong>，并且这个inode中某一个字段需要指向这个文件所在块号。从图中可以看到，如果一个inode是128字节，那么一个块可以存放8个inode。如果inode数目不够时也可以使用两个或者多个块存放inode信息，但是这样用于存放数据的块就会减少……</p>
+<p>​    所以需要一个<strong>inode位图</strong>来管理inode的使用情况，这里用1号块来作为inode位图。</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_jpg/GLeh42uInXRPpGdb1rLVOuU9fgMuLiaDf7uy19fsibjjvkCBD82o2LzYoiaXMOUCoH5tswW0HVTAIxmdsbyH0oVDQ/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<blockquote>
+<p>块位图是管理可用的块，每一位代表一个块的使用与否。inode 位图管理的是一条一条的 inode，并不是 inode 所占用的块，比如上图中有 8 条 inode，则 inode 位图中就有 8 位是管理他们的使用与否。</p>
+</blockquote>
+<hr>
+<h2 id="连续存储法"><a href="#连续存储法" class="headerlink" title="连续存储法"></a>连续存储法</h2><p>​    前面讨论的都是单个块就能放下一个文件的情况，那么如果一个文件需要多个块才能实现保存文件呢？此时需要采用<strong>连续存储法</strong>，而inode 则只记录文件的第一个块，以及后面还需要多少块，即可。</p>
+<p>​    但是这种方法的缺点是：容易留下大大小小的空洞，新的文件到来之后难以找到合适的空白块，空间会被浪费！既然文件对应的inode中记录了文件所在的块，可以进一步扩展一下多记录几个块。</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/GLeh42uInXRPpGdb1rLVOuU9fgMuLiaDfUHOgLG93SuaRKVQx7KwvwEMkibXibUBiahk2zPGHxJEllw9yGIiaEHOZ7w/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<p>​    将原来的“所在块号”扩展一下，记录8个块号！而这些块不需要连续，那么所在块号字段大小从4字节增大到8*4字节。但是问题又来了，8个块号最多只能记录最大文件8K(一个块是1K)，那么文件大小收到了限制。此时可以让其中一个块作为<strong>间接索引</strong>。</p>
+<hr>
+<h2 id="间接索引"><a href="#间接索引" class="headerlink" title="间接索引"></a>间接索引</h2><p><img src="https://mmbiz.qpic.cn/mmbiz_png/GLeh42uInXRPpGdb1rLVOuU9fgMuLiaDf78H2eJA2Hsib2kDzzibPdaM37BII5aJOkIbemBSWlfKL9VpaLmLemYkA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<p>​    将原来的第8号块作为间接索引块，这样就可以拥有263个块(多了256 -1 个块)可用了，这种索引叫做<strong>一级间接索引</strong>。如果还不够就再弄一个块做一级间接索引，或者做二级间接索引（二级间接索引则可以多出 256 * 256 - 1 个块）。</p>
+<hr>
+<h2 id="超级块"><a href="#超级块" class="headerlink" title="超级块"></a>超级块</h2><p>​    当文件系统中inode数量不够时如何才能得知？是不是需要在inode位图中寻找才能知道够不够用？所以现在希望用一个全局的地方记录这些信息，也能方便调整。</p>
+<p>​    那么就再占用一个块来存储这些数据吧！由于他们看起来像是站在上帝视角来描述这个文件系统的，所以我们把它放在最开始的块上，并把它叫做<strong>超级块</strong>。现在，<strong>块位图</strong>、<strong>inode 位图</strong>、<strong>inode 表</strong>，都是是固定地占据这块1、块2、块3 这三个位置。</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_jpg/GLeh42uInXRPpGdb1rLVOuU9fgMuLiaDfc7McjdEjQfcUbDDxOzVw6ZDqLLrJDAsY8IgdXN5lmsodZ6aHCxpbjg/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<hr>
+<h2 id="块描述符"><a href="#块描述符" class="headerlink" title="块描述符"></a>块描述符</h2><p>​    如果之后inode的数量很多，使得inode表或者inode位图需要占据多个块，该怎么办？又或者块的数目增多，块位图需要占据多个块该怎么办？不指定哪个块表示什么程序无法自己得知块的含义。</p>
+<p>​    所以此时可以跟超级块那样选取一个块来记录，就选择紧跟在超级块后面的 1 号块来记录这些信息吧，并把它称之为<strong>块描述符</strong>。当然，这些所在块号只是记录起始块号，块位图、inode 位图、inode 表分别都可以占用多个块。</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_jpg/GLeh42uInXRPpGdb1rLVOuU9fgMuLiaDffia4t0XszAj6icMpTAiaJY4d5cgN0Ka0DnULFZZZlCEdK3UmanFbqcSEA/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<h2 id="引导块"><a href="#引导块" class="headerlink" title="引导块"></a>引导块</h2><p>​    当Ext2文件系统挂载到某一个分区上之后，那么文件系统格式化就有自己的逻辑空间大小，将此逻辑空间按照上述进行布局。整个分为两个部分：一个部分是引导块，一个是数据块组。</p>
+<blockquote>
+<p>引导块：为磁盘分区的第一块，记录文件系统分区的一些信息，，引导加载当前分区的程序和数据被保存在这个块中。一般占用2kB；</p>
+</blockquote>
+<hr>
+<h1 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h1><p>​    在存储文件时不只是单纯的普通文件，还可能是目录文件，比如文件路径是：赘婿&#x2F;赘婿1.mp4，想要访问到文件赘婿1.mp4，那么文件全名就要写成：赘婿&#x2F;赘婿1.mp4。如果想要做到这一点就需要拿<strong>inode结构体</strong>来分析了。</p>
+<p>​    上面inode结构体中需要专门加一个 4 字节，来表示<strong>文件类型</strong>。如果是<strong>普通文件</strong>，则这个 inode 所指向的数据块仍然和之前一样，就是文件本身原封不动的内容。但如果是<strong>目录文件</strong>，则这个 inode 所指向的数据块，就需要重新规划了。</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/GLeh42uInXRPpGdb1rLVOuU9fgMuLiaDf9C2jf6WySMyJTvESoChM9aOCWDibOys76I4hufo45zu0WPWWMnea0xw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<p>​    这个数据块里应该是什么样子呢？可以是一个一个指向不同 inode 的紧挨着的结构体。</p>
+<p>​    这样先通过 赘婿这个目录文件，找到所在的数据块。再根据这个数据块里的一个个带有 <strong>inode</strong> 信息的结构体，找到这个目录下的所有文件。</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/GLeh42uInXRPpGdb1rLVOuU9fgMuLiaDf4ia6OOsneVH1xWqnibiboqPCbDvZetEmTJ15oRATib4NicpqHibhPPp83BMw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<p>​    这时如果想要查看一下赘婿这个目录下的所有文件，将文件名和文件类型都展示出来，如果把一个个结构体指向的 inode 从 inode 表中取出，再把文件名和文件类型取出，这很是浪费时间。而让用户看到一个目录下的所有文件，又是一个极其常见的操作，所以，不如把文件名和文件类型这种常见的信息，放在数据块中的结构体里。</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/GLeh42uInXRPpGdb1rLVOuU9fgMuLiaDfaCmiaOAibU7q8kxf8CJdJRYYdqGdmnGAvb2pN5IhKENAON2GicIjAAAww/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<p>​    同时，inode 结构中的文件名，好像就没啥用了，这种变长的东西放在这种定长的结构中本身就很讨厌，早就想给它去掉了。而且还能给其他信息省下空间，比如文件所在块的数组，就能再多几个了。</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/GLeh42uInXRPpGdb1rLVOuU9fgMuLiaDfJSNp4Dxibd7IFba5DoicWdgkHiba1khAdAibwU1vmpDjN8ia3DS1ibwMklew/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<p>​    现在我们就可以给文件分门别类放进不同目录下了，还可以在目录下创建目录，无限套娃。</p>
+<h2 id="根目录-1"><a href="#根目录-1" class="headerlink" title="根目录"></a>根目录</h2><p>​    我们访问到一个目录下，可以很舒服地看到目录里的文件，然后再根据名称访问这个目录下的文件或者目录，整个过程都是一个套路。但是，最上层的目录下的所有文件，即<strong>根目录</strong>，现在仍然需要通过遍历所有的 inode 来获得，能不能和上面的套路统一？</p>
+<blockquote>
+<p><strong>inode 表中的 0 号 inode，就表示根目录</strong>，一切的访问，就从这个根目录开始！</p>
+</blockquote>
+<p>​    这样写死后就满足要求了。</p>
+<hr>
+<h1 id="文件系统架构"><a href="#文件系统架构" class="headerlink" title="文件系统架构"></a>文件系统架构</h1><p><img src="https://mmbiz.qpic.cn/mmbiz_png/GLeh42uInXRPpGdb1rLVOuU9fgMuLiaDfnk5ApwlxjBJSF2rSoxyhVFDcmktSrrah5Mj8iakhm4raOciaT4PLqQRg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<p>​    这个就是文件系统，和linux上的经典文件系统EXT2基本相同。</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/GLeh42uInXRPpGdb1rLVOuU9fgMuLiaDfP9ia54kT3wLekE3Id4bAib4EYTHVWP7p0PX1VQun1789BYzJNgTq2uUw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<blockquote>
+<p>\1. 超级块前面是启动块，这个是 PC 联盟给硬盘规定的 1KB 专属空间，任何文件系统都不能用它。</p>
+<p>\2. ext2 文件系统首先将整个硬盘分为很多块组，但如果只有一个块组的话，和我们的文件系统整体结构就完全一样了，分别是超级块、块描述符、块位图、inode 位图、inode 表、数据块。</p>
+<p>\3. ext2 文件系统的 inode 表中用 15 个块来定位文件，其中第 13 个块为一级间接索引、14 个为二级间接索引、15 个为三级间接索引。</p>
+<p>\4. ext2 文件系统的文件类型分得更多，还有常见的如块设备文件、字符设备文件、管道文件、socket 文件等。</p>
+<p>\5. ext2 文件系统的超级块、块描述符、inode 表中记录的信息更多，但核心的和我们的文件系统一样，而且这些字段在后续的 ext3 和 ext4 中不断增加，保持向前兼容。</p>
+<p>\6. ext2 文件系统的 2 号 inode 为根目录，而我们的系统是 0 号 inode 为根目录，这个很随意，你设计一个文件系统定一个 187 号 inode 为根目录也没人拦着你。</p>
+</blockquote>
+<p>​    如果想进一步了解EXT2文件系统，可以查看博客<a target="_blank" rel="noopener" href="http://docs.linuxtone.org/ebooks/C&CPP/c/ch29s02.html">EXT2文件系统</a>。</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/183238194">https://zhuanlan.zhihu.com/p/183238194</a></p>
+<p>文件系统存储</p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ivnm7VPHKLswUNqNBEYhbw">https://mp.weixin.qq.com/s/ivnm7VPHKLswUNqNBEYhbw</a></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/IMMys5Cim_Jcdoe9_FfZRQ">https://mp.weixin.qq.com/s/IMMys5Cim_Jcdoe9_FfZRQ</a></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Akm535giLvjR5h5oDqJsxQ">https://mp.weixin.qq.com/s/Akm535giLvjR5h5oDqJsxQ</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Barret</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2021/06/06/Linux/Linux%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/Linux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/Linux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F(%E4%BA%8C)/">http://example.com/2021/06/06/Linux/Linux%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/Linux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/Linux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F(%E4%BA%8C)/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">Barret Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/07/04/Linux/Linux%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/Linux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/Linux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F(%E4%B8%89)/"><img class="prev-cover" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Linux文件系统(三)</div></div></a></div><div class="next-post pull-right"><a href="/2021/05/30/Linux/Linux%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/Linux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/Linux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F(%E4%B8%80)/"><img class="next-cover" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Linux文件系统(一)</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F14206928472%2F1000.jpg&amp;refer=http%3A%2F%2Finews.gtimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650157497&amp;t=70dfbdc4919a4e744f090628aaf5059d" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Barret</div><div class="author-info__description">Welcome Visit</div></div><div class="card-info-data is-center"><div class="card-info-data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a></div><div class="card-info-data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a></div><div class="card-info-data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/anyeyueren" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:2412704562@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux%E7%B3%BB%E7%BB%9F%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="toc-number">1.</span> <span class="toc-text">Linux系统目录结构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B9%E7%9B%AE%E5%BD%95"><span class="toc-number">1.1.</span> <span class="toc-text">根目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#x2F-usr%E5%90%AB%E4%B9%89"><span class="toc-number">1.2.</span> <span class="toc-text">&#x2F;usr含义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#x2F-var%E5%90%AB%E4%B9%89"><span class="toc-number">1.3.</span> <span class="toc-text">&#x2F;var含义</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E7%9A%84%E5%AD%98%E5%82%A8"><span class="toc-number">2.</span> <span class="toc-text">文件的存储</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9E%E7%BB%AD%E7%A9%BA%E9%97%B4%E5%AD%98%E6%94%BE%E6%96%B9%E5%BC%8F"><span class="toc-number">2.1.</span> <span class="toc-text">连续空间存放方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9D%9E%E8%BF%9E%E7%BB%AD%E7%A9%BA%E9%97%B4%E5%AD%98%E6%94%BE%E6%96%B9%E5%BC%8F"><span class="toc-number">2.2.</span> <span class="toc-text">非连续空间存放方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%93%BE%E8%A1%A8%E6%96%B9%E5%BC%8F"><span class="toc-number">2.2.1.</span> <span class="toc-text">链表方式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9A%90%E5%BC%8F%E9%93%BE%E8%A1%A8"><span class="toc-number">2.2.1.1.</span> <span class="toc-text">隐式链表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%98%BE%E7%A4%BA%E9%93%BE%E6%8E%A5"><span class="toc-number">2.2.1.2.</span> <span class="toc-text">显示链接</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95%E6%96%B9%E5%BC%8F"><span class="toc-number">2.2.2.</span> <span class="toc-text">索引方式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%93%BE%E5%BC%8F%E7%B4%A2%E5%BC%95%E5%9D%97"><span class="toc-number">2.2.2.1.</span> <span class="toc-text">链式索引块</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E7%BA%A7%E7%B4%A2%E5%BC%95%E5%9D%97"><span class="toc-number">2.2.2.2.</span> <span class="toc-text">多级索引块</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#linux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="toc-number">2.3.</span> <span class="toc-text">linux文件系统</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%A9%BA%E9%97%B2%E7%A9%BA%E9%97%B4%E7%AE%A1%E7%90%86"><span class="toc-number">3.</span> <span class="toc-text">空闲空间管理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A9%BA%E9%97%B2%E8%A1%A8%E6%B3%95"><span class="toc-number">3.1.</span> <span class="toc-text">空闲表法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A9%BA%E9%97%B2%E9%93%BE%E8%A1%A8%E6%B3%95"><span class="toc-number">3.2.</span> <span class="toc-text">空闲链表法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%8D%E5%9B%BE%E6%B3%95"><span class="toc-number">3.3.</span> <span class="toc-text">位图法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%97%E4%BD%8D%E5%9B%BE"><span class="toc-number">3.3.1.</span> <span class="toc-text">块位图</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96"><span class="toc-number">4.</span> <span class="toc-text">文件读取</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#inode%E4%BD%8D%E5%9B%BE"><span class="toc-number">4.1.</span> <span class="toc-text">inode位图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9E%E7%BB%AD%E5%AD%98%E5%82%A8%E6%B3%95"><span class="toc-number">4.2.</span> <span class="toc-text">连续存储法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%B4%E6%8E%A5%E7%B4%A2%E5%BC%95"><span class="toc-number">4.3.</span> <span class="toc-text">间接索引</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B6%85%E7%BA%A7%E5%9D%97"><span class="toc-number">4.4.</span> <span class="toc-text">超级块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9D%97%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-number">4.5.</span> <span class="toc-text">块描述符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E5%AF%BC%E5%9D%97"><span class="toc-number">4.6.</span> <span class="toc-text">引导块</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">5.</span> <span class="toc-text">目录</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B9%E7%9B%AE%E5%BD%95-1"><span class="toc-number">5.1.</span> <span class="toc-text">根目录</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84"><span class="toc-number">6.</span> <span class="toc-text">文件系统架构</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%B8%83)/" title="进程同步和信号量"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="进程同步和信号量"/></a><div class="content"><a class="title" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%B8%83)/" title="进程同步和信号量">进程同步和信号量</a><time datetime="2021-11-24T22:04:16.000Z" title="发表于 2021-11-25 06:04:16">2021-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/" title="信号量临界区保护"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="信号量临界区保护"/></a><div class="content"><a class="title" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/" title="信号量临界区保护">信号量临界区保护</a><time datetime="2021-11-24T22:04:16.000Z" title="发表于 2021-11-25 06:04:16">2021-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/29/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AD)/" title="CPU调度策略"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CPU调度策略"/></a><div class="content"><a class="title" href="/2021/10/29/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AD)/" title="CPU调度策略">CPU调度策略</a><time datetime="2021-10-28T22:04:16.000Z" title="发表于 2021-10-29 06:04:16">2021-10-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/" title="内核级线程"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="内核级线程"/></a><div class="content"><a class="title" href="/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/" title="内核级线程">内核级线程</a><time datetime="2021-10-24T22:04:16.000Z" title="发表于 2021-10-25 06:04:16">2021-10-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/17/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" title="智能指针"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="智能指针"/></a><div class="content"><a class="title" href="/2021/10/17/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" title="智能指针">智能指针</a><time datetime="2021-10-16T22:04:16.000Z" title="发表于 2021-10-17 06:04:16">2021-10-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By Barret</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

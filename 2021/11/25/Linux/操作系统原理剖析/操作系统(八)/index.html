@@ -1,0 +1,345 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>信号量临界区保护 | Barret Blog</title><meta name="keywords" content="IT"><meta name="author" content="Barret"><meta name="copyright" content="Barret"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="​    上一节中提到，进程之前依靠信号量实现同步，信号量需要依靠临界区来保护。通多对信号量的访问和修改，多个进程得到有序推进。但是信号量对应的数值多个进程都可以进行修改，当某次修改出错了就会引起不可预知的问题。   ​    图中因为两个进程调度错乱了，在同时修改empty的数值，最终导致empty等于-2，而此时有三个进程在睡眠中。这种与调度有关的共享数据语义错误叫做竞争条件，错误由多个进程并">
+<meta property="og:type" content="article">
+<meta property="og:title" content="信号量临界区保护">
+<meta property="og:url" content="http://example.com/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/index.html">
+<meta property="og:site_name" content="Barret Blog">
+<meta property="og:description" content="​    上一节中提到，进程之前依靠信号量实现同步，信号量需要依靠临界区来保护。通多对信号量的访问和修改，多个进程得到有序推进。但是信号量对应的数值多个进程都可以进行修改，当某次修改出错了就会引起不可预知的问题。   ​    图中因为两个进程调度错乱了，在同时修改empty的数值，最终导致empty等于-2，而此时有三个进程在睡眠中。这种与调度有关的共享数据语义错误叫做竞争条件，错误由多个进程并">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650272949&t=18f99d2e597ef4e5080a0e7cdc68b6e1">
+<meta property="article:published_time" content="2021-11-24T22:04:16.000Z">
+<meta property="article:modified_time" content="2021-12-02T13:45:06.351Z">
+<meta property="article:author" content="Barret">
+<meta property="article:tag" content="IT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650272949&t=18f99d2e597ef4e5080a0e7cdc68b6e1"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":50},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '信号量临界区保护',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-12-02 21:45:06'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.0.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F14206928472%2F1000.jpg&amp;refer=http%3A%2F%2Finews.gtimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650157497&amp;t=70dfbdc4919a4e744f090628aaf5059d" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><div class="data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a></div><div class="data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a></div><div class="data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Barret Blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">信号量临界区保护</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-11-24T22:04:16.000Z" title="发表于 2021-11-25 06:04:16">2021-11-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-12-02T13:45:06.351Z" title="更新于 2021-12-02 21:45:06">2021-12-02</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="信号量临界区保护"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>​    上一节中提到，进程之前依靠信号量实现同步，信号量需要依靠临界区来保护。<strong>通多对信号量的访问和修改，多个进程得到有序推进</strong>。但是信号量对应的数值多个进程都可以进行修改，当某次修改出错了就会引起不可预知的问题。</p>
+<img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200317213259596-578105005.png" alt="img" style="zoom:67%;" />
+
+<p>​    图中因为两个进程调度错乱了，在同时修改empty的数值，最终导致empty等于-2，而此时有三个进程在睡眠中。这种<strong>与调度有关</strong>的共享数据语义错误叫做竞争条件，<strong>错误由多个进程并发操作共享数据引起</strong>，错误与调度顺序有关，很难发现和调度。</p>
+<p>​    从这个错误可以得知在内核中只要是共享的数据都需要做保护。</p>
+<hr>
+<p>​    解决这种竞争条件直观的做法就是：当一个进程在写共享变量empty的时候阻止其他进程也访问empty。详细流程看图中P1和P2同时修改empty时采用的做法。</p>
+<img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200317213352355-382687384.png" alt="img" style="zoom:67%;" />
+
+<hr>
+<h1 id="临界区"><a href="#临界区" class="headerlink" title="临界区"></a>临界区</h1><p>​    临界区：一次只允许一个进程进入的那一段代码。生产者P1和生产者P2中都有“empty–”，但是一次仅允许一个进程能够进入并执行该代码。</p>
+<img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200317213410254-52852129.png" alt="img" style="zoom:67%;" />
+
+<p>​    所以修改信号量的代码一定要保证语意正确，并且这段代码一定要是临界区代码，这段代码一定要加以保护。现在思路是在进入临界区之前写一段内容，作用是将临界区代码给锁住，不让其他进程进入临界区，当执行完临界区代码后再写一段内容，作用是将临界区给释放的锁给释放掉。</p>
+<hr>
+<h2 id="临界区保护原则"><a href="#临界区保护原则" class="headerlink" title="临界区保护原则"></a>临界区保护原则</h2><p>​    基本原则是<strong>互斥进入</strong>，即：</p>
+<blockquote>
+<p>如果一个进程在临界区中执行，则其他进程不允许进入，这种进程间的约束关系就称为<strong>互斥</strong>。</p>
+</blockquote>
+<p>​    保护原则是<strong>有空让进</strong>和<strong>有限接待</strong>：</p>
+<blockquote>
+<p>有空让进：如果没有进程处于临界区，但是有进程请求进入临界区，应该能让某个请求进程进入临界区执行，即不发生资源死锁情况；</p>
+<p>有限接待：从进程发出进入请求到允许进入，<strong>不能无限等待</strong>；</p>
+</blockquote>
+<hr>
+<h2 id="临界区保护软件实现"><a href="#临界区保护软件实现" class="headerlink" title="临界区保护软件实现"></a>临界区保护软件实现</h2><h3 id="轮转法"><a href="#轮转法" class="headerlink" title="轮转法"></a>轮转法</h3><blockquote>
+<p><strong>如果turn&#x3D;0，那就进入执行，turn!&#x3D;0，那就空转</strong></p>
+</blockquote>
+<p>​    采用轮转法，由于turn变量在任何时刻都只能取值0或者1，所以图中两个进程P0和P1在任何时候最多只有一个进程可以进入临界区，这就保证了临界区的互斥性。</p>
+<p>​    但是这种做法缺陷也很明显：进程P0进入一次临界区以后，turn此时值为1，如果P1进程一直不尝试临界区，那么turn就无法置成0，那么P0如果在进入临界区之后马上又想进入，此时就无法实现。P0必须等到P1进过临界区之后才能有机会再进入。</p>
+<p>​    <strong>轮转法不满足“有空让进”原则</strong>。</p>
+<img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200317213444122-279032842.png" alt="img" style="zoom:67%;" />
+
+<hr>
+<h3 id="标记法"><a href="#标记法" class="headerlink" title="标记法"></a>标记法</h3><blockquote>
+<p>标记法的核心思想：进程P0想进入临界区就做一个标记，即设置flag[0] &#x3D; true。做完标记之后扫描其他进程是否要进入临界区，如果其他进程都不进入则该进程就进入临界区，否则就调用while(flag[1])，自旋等待。</p>
+</blockquote>
+<img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200317213509084-1484580064.png" alt="img" style="zoom:67%;" />
+
+<p>​    能否保证互斥进入？如果两个进程都在临界区中，则flag[0]  &#x3D;  flag[1]  &#x3D;  true，且又都没有停在while上自等待。这是矛盾的，所以可以保证互斥进入。</p>
+<p>​    能否保证有空让进？进程P0执行flag[0] &#x3D; true后切换到进程P1执行，现在P1也请求进入临界区，从而让flag[1] &#x3D; true，P1就会在while(flag[0])上循环直到时间片到。而现在P0也因为flag[1]置为true在while上循环，两个进程都在临界区门口自循环等待。也就是说标记法也不满足“有空不让进”。</p>
+<p>​    需要注意的是标记法是由于两个进程都要进入临界区而互相锁住造成的有空不让进。轮转法造成的“有空不让进”是由于一个进程进入临界区后其优先级就下降了，其他进程的优先级被抬高，其他进程不进入优先级自己也没法进入。</p>
+<hr>
+<h2 id="Peterson算法"><a href="#Peterson算法" class="headerlink" title="Peterson算法"></a>Peterson算法</h2><p>​    Peterson算法将轮转法和标记法相结合，实现思想是：</p>
+<blockquote>
+<ul>
+<li>先用<strong>标记法</strong>判断进程是否请求进入临界区；</li>
+<li>如果进程想要进入临界区就用<strong>轮转法</strong>给进程进行一个明确的优先排序；</li>
+<li>将轮转法和标记法融合一起来实现临界区；</li>
+</ul>
+</blockquote>
+<p>​    现在来验证Peterson算法，首先如果P0和P1同时在临界区内，必须满足条件flag[0] &#x3D; flag[1] &#x3D; true，即都做了进入临界区的标记。P0进入了临界区说明trun &#x3D; 0，但是如果P1也在临界区要求turn &#x3D;1，矛盾的所以P0和P1不可能都在临界区。</p>
+<img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200317213545857-711797926.png" alt="img" style="zoom:67%;" />
+
+<p>​    再来分析“有空让进”原则，如果两个进程P0和P1中有一个进程不想进入临界区，那么进程对应的flag就是false，那么就无法达到while自循环的条件，这种情况不会造成有空不让进的现象。如果两个进程都要求进入临界区，此时turn发挥作用，P0进入临界区时turn &#x3D;1，那么P1只能在while上等待，只要临界区有空，总有一个请求可以进入临界区。</p>
+<p>​    最后分析是否满足“有限等待”原则，当P0进入临界区，P1如果请求一定会等待，但是P0在临界区执行时间有限的，一旦P0离开临界区flag[0]置flase，此时P1就能够进入临界区。不会导致P1一直在自旋的情况（即一直进入）。</p>
+<hr>
+<h2 id="Lamport面包店算法"><a href="#Lamport面包店算法" class="headerlink" title="Lamport面包店算法"></a>Lamport面包店算法</h2><p>​    Peterson算法通过软件实现了对临界区的保护，但是却只能处理两个进程的临界区，无法应对多进程环境中临界区的保护。</p>
+<p>​    Lamport面包店算法的处理方式是：N个顾客想要进入面包店采购，首先按照次序给每一个顾客安排一个号码，顾客按照其号码由小到大依次进行购买，完成购买顾客号码清零，这样完成购买的顾客想要再次购买就需要重新排队拿新号码。按照这种思路算法编写进入临界区和退出临界区的代码。</p>
+<p>​    面包店算法依然是标记+轮转的结合：</p>
+<blockquote>
+<p>轮转：每个进程都获取一个序号，序号最小的进入（优先级最高）；</p>
+<p>标记：进程离开时序号清零，不为0的序号即标记；</p>
+</blockquote>
+<p>​    面包店算法：每个进入商店的客户都领取到一个号码，<strong>号码最小的先得到服务，并且号码相同时，进程号靠前的先服务</strong>。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Lamport面包店算法中进程i对应代码</span></span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">&#123;</span><br><span class="line">   choosing[i] = <span class="literal">true</span>;</span><br><span class="line">   num[i] = max(num[<span class="number">0</span>],num[<span class="number">1</span>],......,num[n<span class="number">-1</span>]+<span class="number">1</span>) + <span class="number">1</span>;  <span class="comment">//取已知号中最大的 + 1，所以现在排队的进程i的序号最大</span></span><br><span class="line">   choosing[i] = <span class="literal">false</span>;</span><br><span class="line">   <span class="keyword">for</span>(j = <span class="number">0</span>;j &lt; n;j++)</span><br><span class="line">   &#123;</span><br><span class="line">      <span class="keyword">while</span>(choosing[j]);</span><br><span class="line">	  <span class="keyword">while</span>( (num[j] != <span class="number">0</span>)                  <span class="comment">// num[j]不为零，即存在其他进程想进入临界区</span></span><br><span class="line">	  	    &amp;&amp; ((num[j],j) &lt; (num[i],i)));  <span class="comment">// (a,b) &lt; (c,d) 意味着 a &lt;=c 且 b &lt; d，即进程j的号比进程i的号小</span></span><br><span class="line">                                            <span class="comment">// 号码小的先得到服务，如果号码相同，名字靠前的先服务</span></span><br><span class="line">                                            <span class="comment">// 进程j想进入临界区且号比进程i小，优先级高，那就让进程j先进入</span></span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">//临界区代码</span></span><br><span class="line">   num[i] = <span class="number">0</span>;   <span class="comment">// 访问完临界区后清零</span></span><br><span class="line">&#125;<span class="keyword">while</span>(<span class="literal">true</span>);   <span class="comment">// Lamport面包店算法中进程i的进入区和退出区代码</span></span><br></pre></td></tr></table></figure>
+
+<p>​    互斥进入：Pi进程在临界区内，Pk尝试进入，那么一定有(num[i],i) &lt; (num[k],k)，那么Pk循环等待。</p>
+<p>​    有空让进：如果没有进程在临界区，最小序号的进程一定能够进入。</p>
+<p>​    有限等待：离开临界区的进程再次进入一定排在最后（FIFO），所以任何一个想进入临界区的进程最多等n个进程。</p>
+<hr>
+<h1 id="临界区的硬件实现"><a href="#临界区的硬件实现" class="headerlink" title="临界区的硬件实现"></a>临界区的硬件实现</h1><h2 id="单CPU"><a href="#单CPU" class="headerlink" title="单CPU"></a>单CPU</h2><p>面包店算法虽然解决了多个进程对临界区的互斥访问问题，但是算法完全依赖软件实现，需要维护一套号码的机制，那么执行效率就不会很高，而且很容易出现所申请的号码溢出。这时候就想有没有什么办法可以让硬件来简化操作。</p>
+<p>​    试想一下，如果计算机系统是单CPU，P0进入临界区了说明CPU正在执行P0的临界区代码，这时候如果P1也进入临界区，说明CPU在执行P0临界区代码过程中进行了进程调度和切换，CPU切到进程P1并执行P1的临界区代码，这才出现P0和P1同时执行临界区代码的情况！</p>
+<p>​    注意这种分析情况只能针对单CPU情况，如果在进程进入临界区以后能阻断调度，让系统不发生任何调度，即让临界区代码的执行变成一个原子操作，就不会出现“进程在临界区执行时发生进程调度切换”的情况。</p>
+<img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200317213622157-627505801.png" alt="img" style="zoom:67%;" />
+
+<p>​    那么现在要保护临界区问题就转变到如何不让调度&#x2F;切换发生？要发生切换就必须调用schedule()函数，而需要进入内核才能调用schedule函数，进入内核又需要中断。所以在临界区只要禁止中断就能禁止进程的切换。这种是<strong>利用硬件中断机制实现的临界区保护</strong>。</p>
+<hr>
+<h2 id="多CPU"><a href="#多CPU" class="headerlink" title="多CPU"></a>多CPU</h2><p>​    <strong>开关中断</strong>是保护临界区的简单而又高效的方法，但是该方法仅适用于单CPU的计算机系统。</p>
+<blockquote>
+<p>CPU0执行进程P0，在进入P0临界区之前，CPU0将其中断关闭了，但是这个关中断对CPU1无影响，CPU1完全可以执行P1的临界区代码。那么现在P0和P1的临界区代码同时执行，此时就可能造成empty的修改混乱。</p>
+</blockquote>
+<p>​    一段代码只能有一个进程进行访问，这很像生产者-消费者问题中共享缓冲区，为了保证共享缓存区数据结构的语义正确，一次只能有一个进程进行访问，即互斥访问。那么是由可以用一个mutex &#x3D; 1的互斥信号量来实现互斥访问控制呢？</p>
+<p>​    不可以，因为临界区本身就是用来保护信号量的操作，现在又要在临界区实现中使用信号量，典型的“从前有座山，山里有座庙，庙里有个老和尚讲故事，从前有座山……”问题。</p>
+<p>​    我们之所以要保护临界区就是为了<strong>保证信号量操作的原子性</strong>，如果通过**<u>硬件机制直接保证互斥信号量mutex操作的原子性</u>**，就可以直接实现mutex信号量。再使用这个mutex信号量来实现一个临界区，在这个临界区中使用任意定义信号量的操作原子性。</p>
+<hr>
+<h3 id="mutex的原子性"><a href="#mutex的原子性" class="headerlink" title="mutex的原子性"></a>mutex的原子性</h3><p>​    互斥信号量mutex取值只有0和1两个数值，所以这个mutex信号量的P，V操作就会简单而规整，完全可以让硬件来实现这个P，V操作的原子性。这个信号量很像一个锁lock，所以又称为互斥锁，现在要用硬件实现互斥锁lock的原子性 —— 硬件原子指令法。</p>
+<p>​    如果lock的当前值为0，即没有上锁，可以继续执行进入临界区，同时要将lock上锁置为1。这个操作需要<strong>做成一个硬件指令</strong>（因为一个硬件指令执行过程中绝对不会被打断，从而实现原子操作）。计算机有这样一句硬件指令：TestAndSet(TSL指令)。</p>
+<blockquote>
+<p>一般计算机都有TSL指令，如果没有TSL也有类似功能的XCHG等指令。</p>
+<p>这条指令有一个操作数，是存放一个布尔变量的内存地址，如果该内存中的变量为false，该指令就会返回false，并且将内存中的变量置成true；如果在内存中的变量为true，则返回true。</p>
+</blockquote>
+<img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200317213634849-1102638766.png" alt="img" style="zoom:67%;" />
+
+<p>​    第一个测试lock为false的进程才能进入临界区，并且保证一旦进入后lock就设置为true，此时其他进程再请求进入临界区监测到lock变量就是true，只能在临界区门口自旋等待。一旦进入临界区的进程退出临界区时，会将lock设置为false。由于其他要进入临界区的进程都在while循环等待，这些进行中就有一个进程得以进入临界区……</p>
+<hr>
+<h1 id="信号量的实现与使用"><a href="#信号量的实现与使用" class="headerlink" title="信号量的实现与使用"></a>信号量的实现与使用</h1><p>​    临界区保护了信号量P、V操作的原子性，从而能够保证信号量数值的语意正确性，接下来根据信号量数值所表达出来的正确语意就可以正确地控制进程的阻塞和唤醒了。</p>
+<p>​    操作系统给用户提供了信号量定义接口以及P,V操作接口后，用户就可以根据需要调用了。</p>
+<hr>
+<h2 id="信号量的使用"><a href="#信号量的使用" class="headerlink" title="信号量的使用"></a>信号量的使用</h2><p>​    信号量的定义：</p>
+<ol>
+<li>信号量是一个需要被多个进程共享的整数；</li>
+<li>根据信号量的值让进程睡眠或者唤醒，睡眠或者环境操作的是进程的PCB；</li>
+<li>在操作这个整数时需要进行临界区保护，可以采用软件的面包店算法，或者使用开关中断操作等；</li>
+</ol>
+<p>​    信号量的实现必须放在内核中，将信号量的P、V操作实现成系统调用，因为变量只有放在内核中才能被所有进程共享。</p>
+<hr>
+<h3 id="系统调用接口"><a href="#系统调用接口" class="headerlink" title="系统调用接口"></a>系统调用接口</h3><p>​    POSIX标准针对信号量定义了如下四个基本系统调用：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1. 这个系统调用可以用来打开或者创建一个信号量变量</span></span><br><span class="line"><span class="comment">// name: 信号量名字；    oflag: 选择创建一个新的信号量或者打开一个现有的信号量；</span></span><br><span class="line"><span class="comment">// mode: 权限位；       value: 信号量初值；</span></span><br><span class="line"><span class="type">sem_t</span> *<span class="title function_">sem_open</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *name, <span class="type">int</span> oflag, <span class="type">mode_t</span> mode, <span class="type">unsigned</span> <span class="type">int</span> value)</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 根据名字从操作系统中删除信号量</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">sem_unlink</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *name)</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 信号量的P操作</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">sem_wait</span><span class="params">(<span class="type">sem_t</span> *sem)</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//4. 信号量的V操作</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">sem_post</span><span class="params">(<span class="type">sem_t</span> *sem)</span>;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="PV案例"><a href="#PV案例" class="headerlink" title="PV案例"></a>PV案例</h2><p>​    模拟一个经典的生产者消费者问题，消费者和生产者操作同一个文件来建立一个共享缓存区，生产者往缓存区写入整数，消费者从缓存区读取数据。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">main()</span><br><span class="line">&#123;</span><br><span class="line">   if(!fork())  //生产者进程</span><br><span class="line">   &#123;</span><br><span class="line">       empty  = sem_open(&quot;empty&quot;,10);  </span><br><span class="line">	   full = sem_open(&quot;full&quot;,0);</span><br><span class="line">	   mutex = sem_open(&quot;mutex&quot;,1);</span><br><span class="line">	   for(i = 0;i&lt;500;i++)</span><br><span class="line">	   &#123;</span><br><span class="line">           sem_wait(empty);</span><br><span class="line">	       sem_wait(mutex);</span><br><span class="line">           // 读写文件操作</span><br><span class="line">           sem_post(mutex);</span><br><span class="line">	       sem_post(full);   </span><br><span class="line">	   &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   if(!fork())  //消费者进程</span><br><span class="line">   &#123;  </span><br><span class="line">       empty = sem_open(&quot;empty&quot;,10);</span><br><span class="line">	   ......</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span>&#123;</span></span><br><span class="line">   <span class="type">char</span> name[<span class="number">20</span>];  <span class="comment">// 信号量名字</span></span><br><span class="line">   <span class="type">int</span>  value;     <span class="comment">// 数据</span></span><br><span class="line">   task_struct * <span class="built_in">queue</span>;  <span class="comment">// 对应的队列</span></span><br><span class="line">   ......</span><br><span class="line">&#125;<span class="type">sem_t</span>;     <span class="comment">// 信号量</span></span><br><span class="line"></span><br><span class="line">sys_sem_open(<span class="type">sem_t</span> * sem)</span><br><span class="line">&#123;</span><br><span class="line">    cli();    <span class="comment">//进区代码，可以是lamport面包店算法、硬件原子指令法等</span></span><br><span class="line">    sem-&gt;value ++;</span><br><span class="line">    <span class="keyword">if</span>((sem-value) &lt;= <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 从sem-&gt;queue队列的首部取出一个进程p</span></span><br><span class="line">        p-&gt;state = READY; <span class="comment">//设为就绪态</span></span><br><span class="line">        <span class="comment">// 将p加入到就绪队列</span></span><br><span class="line">    &#125;</span><br><span class="line">    sti();    <span class="comment">// 退出区代码，和进入区代码对应</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">sys_sem_wait(<span class="type">sem_t</span> * sem) </span><br><span class="line">&#123;</span><br><span class="line">    cli();   </span><br><span class="line">    sem.value--;</span><br><span class="line">    <span class="keyword">if</span>(sem.value &lt; <span class="number">0</span>)  <span class="comment">//如果此信号量为0，就阻塞此进程，然后调度其他队列</span></span><br><span class="line">    &#123;</span><br><span class="line">        current-&gt;state = SLEEP;  <span class="comment">// 当前进程设置为阻塞</span></span><br><span class="line">        <span class="comment">// 将当前进程(如current指针)追加到sem-&gt;queue队列的尾部</span></span><br><span class="line">        schedule();    <span class="comment">// 进行切换，注意这里是在内核中，schedule内部调用switch切换到其他进程，因为当前进程已经阻塞了</span></span><br><span class="line">    &#125;</span><br><span class="line">    sti();  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="Linux0-11读磁盘"><a href="#Linux0-11读磁盘" class="headerlink" title="Linux0.11读磁盘"></a>Linux0.11读磁盘</h2><p>​    主要流程就是申请缓冲区，启动读指令后，开始阻塞。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">bread(<span class="type">int</span> dev, <span class="type">int</span> block)  <span class="comment">// bread，到磁盘上读一个磁盘块</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">buffer_head</span> * <span class="title">bh</span>;</span>   <span class="comment">//bh指向一块申请的缓冲区</span></span><br><span class="line">    ll_rw_block(READ,bh);     <span class="comment">// 启动读指令</span></span><br><span class="line">    wait_on_buffer(bh);    <span class="comment">//开始阻塞</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 启动磁盘读以后睡眠，等待磁盘读完由磁盘中断将其唤醒，这也是一种同步</span></span><br><span class="line">lock_buffer(buffer_head * bh)</span><br><span class="line">&#123;</span><br><span class="line">    cli();</span><br><span class="line">    <span class="keyword">while</span>(bh-&gt;b_lock)</span><br><span class="line">    &#123;</span><br><span class="line">        sleep_on(&amp;bh-&gt;b_wait);</span><br><span class="line">    &#125;</span><br><span class="line">    bh-&gt;b_lock = <span class="number">1</span>;</span><br><span class="line">    sti();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Barret</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/">http://example.com/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">Barret Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%B8%83)/"><img class="prev-cover" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">进程同步和信号量</div></div></a></div><div class="next-post pull-right"><a href="/2021/10/29/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AD)/"><img class="next-cover" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">CPU调度策略</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F14206928472%2F1000.jpg&amp;refer=http%3A%2F%2Finews.gtimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650157497&amp;t=70dfbdc4919a4e744f090628aaf5059d" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Barret</div><div class="author-info__description">Welcome Visit</div></div><div class="card-info-data is-center"><div class="card-info-data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a></div><div class="card-info-data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a></div><div class="card-info-data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/anyeyueren" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:2412704562@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%B4%E7%95%8C%E5%8C%BA"><span class="toc-number">1.</span> <span class="toc-text">临界区</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%B4%E7%95%8C%E5%8C%BA%E4%BF%9D%E6%8A%A4%E5%8E%9F%E5%88%99"><span class="toc-number">1.1.</span> <span class="toc-text">临界区保护原则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%B4%E7%95%8C%E5%8C%BA%E4%BF%9D%E6%8A%A4%E8%BD%AF%E4%BB%B6%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.2.</span> <span class="toc-text">临界区保护软件实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BD%AE%E8%BD%AC%E6%B3%95"><span class="toc-number">1.2.1.</span> <span class="toc-text">轮转法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%87%E8%AE%B0%E6%B3%95"><span class="toc-number">1.2.2.</span> <span class="toc-text">标记法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Peterson%E7%AE%97%E6%B3%95"><span class="toc-number">1.3.</span> <span class="toc-text">Peterson算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lamport%E9%9D%A2%E5%8C%85%E5%BA%97%E7%AE%97%E6%B3%95"><span class="toc-number">1.4.</span> <span class="toc-text">Lamport面包店算法</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%B4%E7%95%8C%E5%8C%BA%E7%9A%84%E7%A1%AC%E4%BB%B6%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.</span> <span class="toc-text">临界区的硬件实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%95CPU"><span class="toc-number">2.1.</span> <span class="toc-text">单CPU</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9ACPU"><span class="toc-number">2.2.</span> <span class="toc-text">多CPU</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#mutex%E7%9A%84%E5%8E%9F%E5%AD%90%E6%80%A7"><span class="toc-number">2.2.1.</span> <span class="toc-text">mutex的原子性</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BF%A1%E5%8F%B7%E9%87%8F%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%8E%E4%BD%BF%E7%94%A8"><span class="toc-number">3.</span> <span class="toc-text">信号量的实现与使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%A1%E5%8F%B7%E9%87%8F%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">3.1.</span> <span class="toc-text">信号量的使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8E%A5%E5%8F%A3"><span class="toc-number">3.1.1.</span> <span class="toc-text">系统调用接口</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PV%E6%A1%88%E4%BE%8B"><span class="toc-number">3.2.</span> <span class="toc-text">PV案例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Linux0-11%E8%AF%BB%E7%A3%81%E7%9B%98"><span class="toc-number">3.3.</span> <span class="toc-text">Linux0.11读磁盘</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%B8%83)/" title="进程同步和信号量"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="进程同步和信号量"/></a><div class="content"><a class="title" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%B8%83)/" title="进程同步和信号量">进程同步和信号量</a><time datetime="2021-11-24T22:04:16.000Z" title="发表于 2021-11-25 06:04:16">2021-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/" title="信号量临界区保护"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="信号量临界区保护"/></a><div class="content"><a class="title" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/" title="信号量临界区保护">信号量临界区保护</a><time datetime="2021-11-24T22:04:16.000Z" title="发表于 2021-11-25 06:04:16">2021-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/29/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AD)/" title="CPU调度策略"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CPU调度策略"/></a><div class="content"><a class="title" href="/2021/10/29/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AD)/" title="CPU调度策略">CPU调度策略</a><time datetime="2021-10-28T22:04:16.000Z" title="发表于 2021-10-29 06:04:16">2021-10-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/" title="内核级线程"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="内核级线程"/></a><div class="content"><a class="title" href="/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/" title="内核级线程">内核级线程</a><time datetime="2021-10-24T22:04:16.000Z" title="发表于 2021-10-25 06:04:16">2021-10-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/17/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" title="智能指针"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="智能指针"/></a><div class="content"><a class="title" href="/2021/10/17/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" title="智能指针">智能指针</a><time datetime="2021-10-16T22:04:16.000Z" title="发表于 2021-10-17 06:04:16">2021-10-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By Barret</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

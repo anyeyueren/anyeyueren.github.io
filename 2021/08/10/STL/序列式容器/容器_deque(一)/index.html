@@ -1,0 +1,297 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>容器deque | Barret Blog</title><meta name="keywords" content="IT"><meta name="author" content="Barret"><meta name="copyright" content="Barret"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="deque简述​    之前的vector是单向开口的连续线性空间，deque则是一种双向开口的连续线性空间。deque可以在头尾两端分别做元素的插入和删除操作。vector与deque除了在头部插入删除元素的区别之外，其次是deque是没有capacity(容量)的观念的。 ​    deque是动态地以分段连续空间组合而成，随时可以增加一段新的空间并进行拼接，所以deuqe不会发生”因旧空间不">
+<meta property="og:type" content="article">
+<meta property="og:title" content="容器deque">
+<meta property="og:url" content="http://example.com/2021/08/10/STL/%E5%BA%8F%E5%88%97%E5%BC%8F%E5%AE%B9%E5%99%A8/%E5%AE%B9%E5%99%A8_deque(%E4%B8%80)/index.html">
+<meta property="og:site_name" content="Barret Blog">
+<meta property="og:description" content="deque简述​    之前的vector是单向开口的连续线性空间，deque则是一种双向开口的连续线性空间。deque可以在头尾两端分别做元素的插入和删除操作。vector与deque除了在头部插入删除元素的区别之外，其次是deque是没有capacity(容量)的观念的。 ​    deque是动态地以分段连续空间组合而成，随时可以增加一段新的空间并进行拼接，所以deuqe不会发生”因旧空间不">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650272949&t=18f99d2e597ef4e5080a0e7cdc68b6e1">
+<meta property="article:published_time" content="2021-08-09T22:04:16.000Z">
+<meta property="article:modified_time" content="2022-03-23T06:01:37.196Z">
+<meta property="article:author" content="Barret">
+<meta property="article:tag" content="IT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650272949&t=18f99d2e597ef4e5080a0e7cdc68b6e1"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2021/08/10/STL/%E5%BA%8F%E5%88%97%E5%BC%8F%E5%AE%B9%E5%99%A8/%E5%AE%B9%E5%99%A8_deque(%E4%B8%80)/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":50},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '容器deque',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-03-23 14:01:37'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.0.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F14206928472%2F1000.jpg&amp;refer=http%3A%2F%2Finews.gtimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650157497&amp;t=70dfbdc4919a4e744f090628aaf5059d" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><div class="data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a></div><div class="data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a></div><div class="data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Barret Blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">容器deque</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-08-09T22:04:16.000Z" title="发表于 2021-08-10 06:04:16">2021-08-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-03-23T06:01:37.196Z" title="更新于 2022-03-23 14:01:37">2022-03-23</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="容器deque"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="deque简述"><a href="#deque简述" class="headerlink" title="deque简述"></a>deque简述</h1><p>​    之前的vector是单向开口的连续线性空间，deque则是一种<strong>双向开口</strong>的连续线性空间。deque可以在头尾两端分别做元素的插入和删除操作。vector与deque除了在头部插入删除元素的区别之外，其次是deque是没有capacity(容量)的观念的。</p>
+<p>​    deque是动态地以分段连续空间组合而成，随时可以增加一段新的空间并进行拼接，所以deuqe不会发生<strong>”因旧空间不足而重新配置一块更大的空间，然后复制元素，再释放空间“</strong>。所以deque也没有空间保留(reserve)功能。</p>
+<blockquote>
+<p>deque的实现比较复杂，内部会维护一个map(不是STL中的map容器，可以理解为是一段映射区)，即一小块连续的空间。该空间中每个元素都是指针，指向另一块较大的区域，这个区域称为缓冲区。在缓冲区中才会保存deque中的数据。所以deque在随机访问或者遍历数据时会比vector慢很多。</p>
+</blockquote>
+<p>​    虽然deque也提供了访问迭代器iterator，但是其并不是一个普通的指针，复杂度远高于vector。除非必要，应该尽可能的使用vector。</p>
+<blockquote>
+<p>当对deque进行排序时，为了提高效率可将deque先完整复制到一个vector上面，将vector排序后再复制回deque。</p>
+</blockquote>
+<hr>
+<h2 id="deque中控器-map"><a href="#deque中控器-map" class="headerlink" title="deque中控器(map)"></a>deque中控器(map)</h2><p>​    vector是连续的线性空间，vector虽然可以成长但是只能向尾端成长，而且这种所谓成长是假象。事实上是另寻一个更大的空间，将原数据复制过去后再释放原来空间的过程。</p>
+<p>​    deque在逻辑上表现为是连续空间，实际上是由一段一段定量连续空间构成。当空间不够用时，就开辟一块连续的空间，串接在整个deque的头端或者尾端。deque类本身最大的任务就是将这些分段的连续空间串接在一起，提供随机存取接口，维护其整体连续的假象。从而对外隐藏了“重新配置、复制、释放”的过程！但是代价就是复杂的迭代器架构。</p>
+<p>​    deque为了维护整体连续的假象，采用了一块所谓的map作为主控，map是一小块连续的空间，每个元素(称为一个节点，node)都是指针，指向了各个分段的连续空间，这些个分段连续空间又称缓冲区，才是存储空间的主体。</p>
+<blockquote>
+<p>SGI   STL允许指定缓冲区的大小，默认值为0，表示使用512bytes缓冲区。</p>
+</blockquote>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//在deque类中定义map，_Map_pointer实际上就是指针的指针，即value_type ** _Map_pointer，是一个二维数组</span></span><br><span class="line"><span class="keyword">typedef</span> value_type* pointer;</span><br><span class="line"><span class="keyword">typedef</span> pointer* _Map_pointer;</span><br></pre></td></tr></table></figure>
+
+<p>​    当map使用率达到满载后，此时需要使用找一个更大的空间来作为map，具体策略查看源码函数**_M_reallocate_map**。</p>
+<img src="https://cdn.jsdelivr.net/gh/anyeyueren/picgoimg/studyImg/map结构示意图.png" style="zoom:67%;" />
+
+<hr>
+<h2 id="deque迭代器"><a href="#deque迭代器" class="headerlink" title="deque迭代器"></a>deque迭代器</h2><p>​    deque是分段连续空间，维持整体连续性需要依靠迭代器运算来完成。迭代器结构体类型可以在源码中查找**_Deque_iterator**。deque的迭代器与vector的完全不一样，他不是继承于iterator类。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">class</span> <span class="title class_">_Tp</span>, <span class="keyword">class</span> <span class="title class_">_Ref</span>, <span class="keyword">class</span> <span class="title class_">_Ptr</span>&gt;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">_Deque_iterator</span> &#123;</span><br><span class="line">  <span class="keyword">typedef</span> _Deque_iterator&lt;_Tp, _Tp&amp;, _Tp*&gt;             iterator;</span><br><span class="line">  <span class="keyword">typedef</span> _Deque_iterator&lt;_Tp, <span class="type">const</span> _Tp&amp;, <span class="type">const</span> _Tp*&gt; const_iterator;</span><br><span class="line">  <span class="type">static</span> <span class="type">size_t</span> _S_buffer_size() &#123; <span class="keyword">return</span> __deque_buf_size(<span class="built_in">sizeof</span>(_Tp)); &#125;</span><br><span class="line">  ......</span><br><span class="line">  <span class="comment">// 保持与容器的联结  </span></span><br><span class="line">  _Tp* _M_cur;         <span class="comment">// 该指针指向缓冲区的现行(current)元素</span></span><br><span class="line">  _Tp* _M_first;       <span class="comment">// 该指针指向缓冲区的头</span></span><br><span class="line">  _Tp* _M_last;        <span class="comment">// 该指针指向缓冲区的尾</span></span><br><span class="line">  _Map_pointer _M_node;   <span class="comment">//指向管控中心map</span></span><br><span class="line">    ......</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//缓冲区的大小有函数决定：</span></span><br><span class="line"><span class="comment">// Note: this function is simply a kludge to work around several compilers&#x27;</span></span><br><span class="line"><span class="comment">//  bugs in handling constant expressions.</span></span><br><span class="line"><span class="keyword">inline</span> <span class="type">size_t</span> __deque_buf_size(<span class="type">size_t</span> __size) &#123;</span><br><span class="line">  <span class="keyword">return</span> __size &lt; <span class="number">512</span> ? <span class="built_in">size_t</span>(<span class="number">512</span> / __size) : <span class="built_in">size_t</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="deque内存管理"><a href="#deque内存管理" class="headerlink" title="deque内存管理"></a>deque内存管理</h2><p>​    map、iterator和缓冲区buffer三者之间关系如下图所示：</p>
+<img src="https://cdn.jsdelivr.net/gh/anyeyueren/picgoimg/studyImg/map与缓冲区关系.png" style="zoom:80%;" />
+
+<p>​    假设现在有个deque&lt; int &gt;，并令其缓冲区大小为32，于是每个缓冲区可容纳32&#x2F;sizeof(int) &#x3D; 8个元素。begin()和end()所传回来的是两个迭代器，分别对应start和finish。现在deque中插入20个元素，那么就需要用到三个缓冲区。</p>
+<p>​    如图所示：那么迭代器start中cur指针指向缓冲区第一个元素，迭代器finish内的cur指针指向缓冲区的最后一个元素(的下一个位置)。最后阴影部分是剩下的备用空间，还可以容纳四个元素。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">iterator <span class="title">begin</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> _M_start; &#125;    <span class="comment">//begin返回迭代器start</span></span><br><span class="line"><span class="function">iterator <span class="title">end</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> _M_finish; &#125;     <span class="comment">//end返回迭代器finish</span></span><br><span class="line"><span class="function">const_iterator <span class="title">begin</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> _M_start; &#125;</span><br><span class="line"><span class="function">const_iterator <span class="title">end</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> _M_finish; &#125;</span><br></pre></td></tr></table></figure>
+
+<img src="https://cdn.jsdelivr.net/gh/anyeyueren/picgoimg/studyImg/map的迭代器.png" style="zoom:80%;" />
+
+<hr>
+<h1 id="deque成员函数"><a href="#deque成员函数" class="headerlink" title="deque成员函数"></a>deque成员函数</h1><h2 id="deque构造函数"><a href="#deque构造函数" class="headerlink" title="deque构造函数"></a>deque构造函数</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1. 构造一个空deque</span></span><br><span class="line"> deque&lt;<span class="type">int</span>&gt; first;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 构造n个元素为elem的deque</span></span><br><span class="line"><span class="function">deque&lt;<span class="type">int</span>&gt; <span class="title">second</span> <span class="params">(n,elem)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 用另一个deque的区间初始化构造一个新的deque</span></span><br><span class="line"><span class="function">deque&lt;<span class="type">int</span>&gt; <span class="title">third</span> <span class="params">(second.begin(),second.end())</span></span>;  </span><br><span class="line"></span><br><span class="line"><span class="comment">//4. 拷贝构造</span></span><br><span class="line"><span class="function">deque&lt;<span class="type">int</span>&gt; <span class="title">fourth</span> <span class="params">(third)</span></span>; </span><br><span class="line"></span><br><span class="line"><span class="comment">//5. 用一个数组中数值初始化一个deque</span></span><br><span class="line"><span class="type">int</span> myints[] = &#123;<span class="number">16</span>,<span class="number">2</span>,<span class="number">77</span>,<span class="number">29</span>&#125;;</span><br><span class="line"><span class="function">deque&lt;<span class="type">int</span>&gt; <span class="title">fifth</span> <span class="params">(myints, myints + <span class="keyword">sizeof</span>(myints) / <span class="keyword">sizeof</span>(<span class="type">int</span>) )</span></span>;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="deque遍历"><a href="#deque遍历" class="headerlink" title="deque遍历"></a>deque遍历</h2><h3 id="assign赋值函数"><a href="#assign赋值函数" class="headerlink" title="assign赋值函数"></a>assign赋值函数</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//函数声明</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">class</span> <span class="title class_">InputIterator</span>&gt;</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">assign</span> <span class="params">( InputIterator first, InputIterator last )</span></span>;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">assign</span> <span class="params">( size_type n, <span class="type">const</span> T&amp; u )</span></span>;</span><br><span class="line"></span><br><span class="line">deque&lt;T,Allocator&gt;&amp; <span class="keyword">operator</span>= ( <span class="type">const</span> deque&lt;T,Allocator&gt;&amp; x );</span><br><span class="line"></span><br><span class="line"><span class="comment">//方法一： 赋值多个重复数值</span></span><br><span class="line">first.<span class="built_in">assign</span> (<span class="number">7</span>,<span class="number">100</span>);             <span class="comment">// a repetition 7 times of value 100</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//方法二： 区间赋值，用first数据给second赋值</span></span><br><span class="line">deque&lt;<span class="type">int</span>&gt;::iterator it;</span><br><span class="line">it=first.<span class="built_in">begin</span>()+<span class="number">1</span>;</span><br><span class="line">second.<span class="built_in">assign</span> (it,first.<span class="built_in">end</span>()<span class="number">-1</span>); </span><br><span class="line"></span><br><span class="line"><span class="comment">//方法三： 用数组myints给third赋值</span></span><br><span class="line"><span class="type">int</span> myints[] = &#123;<span class="number">1776</span>,<span class="number">7</span>,<span class="number">4</span>&#125;;</span><br><span class="line">third.<span class="built_in">assign</span> (myints,myints+<span class="number">3</span>);   </span><br><span class="line"></span><br><span class="line"><span class="comment">//方法四： =</span></span><br><span class="line"><span class="function">deque&lt;<span class="type">int</span>&gt; <span class="title">first</span> <span class="params">(<span class="number">3</span>)</span></span>;  </span><br><span class="line"><span class="function">deque&lt;<span class="type">int</span>&gt; <span class="title">second</span> <span class="params">(<span class="number">5</span>)</span></span>;    </span><br><span class="line">second=first;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="数值随机访问"><a href="#数值随机访问" class="headerlink" title="数值随机访问"></a>数值随机访问</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//函数声明</span></span><br><span class="line"><span class="function">const_reference <span class="title">at</span> <span class="params">( size_type n )</span> <span class="type">const</span></span>;</span><br><span class="line">const_reference <span class="keyword">operator</span>[] ( size_type n ) <span class="type">const</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//at使用方法</span></span><br><span class="line"><span class="function">deque&lt;<span class="type">int</span>&gt; <span class="title">mydeque</span> <span class="params">(<span class="number">10</span>)</span></span>;</span><br><span class="line">mydeque.<span class="built_in">at</span>(<span class="number">3</span>)=<span class="number">30</span>;</span><br><span class="line">cout &lt;&lt; mydeque.<span class="built_in">at</span>(<span class="number">3</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. operator[]使用方法</span></span><br><span class="line">mydeque[<span class="number">3</span>]=<span class="number">30</span>;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<table>
+<thead>
+<tr>
+<th>deque::begin()</th>
+<th>返回引用容器中第一个元素的迭代器。</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>deque::end()</td>
+<td>返回一个迭代器，引用 deque 容器中的最后元素。</td>
+</tr>
+<tr>
+<td>deque::rbegin()</td>
+<td>返回引用容器中最后一个元素的反向迭代器。</td>
+</tr>
+<tr>
+<td>deque::rend()</td>
+<td>返回一个反向迭代器，它引用 deque 容器中第一个元素之前的元素，这被认为是它的反向端。</td>
+</tr>
+<tr>
+<td>deque::front()</td>
+<td>返回deque中第一个元素。</td>
+</tr>
+<tr>
+<td>deque::back()</td>
+<td>返回deque中最后一个元素。</td>
+</tr>
+<tr>
+<td>deque::empty()</td>
+<td>判断队列是否为空。</td>
+</tr>
+<tr>
+<td>deque::clear()</td>
+<td>清空队列</td>
+</tr>
+<tr>
+<td>deque::push_back()</td>
+<td>尾插法插入队列</td>
+</tr>
+<tr>
+<td>deque::push_front()</td>
+<td>头插法插入队列</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>deque::pop_back()</th>
+<th>从尾部删除元素</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>deque::pop_front()</td>
+<td>从头部删除元素</td>
+</tr>
+<tr>
+<td>deque::size()</td>
+<td>队列中元素个数</td>
+</tr>
+<tr>
+<td>deque::max_size()</td>
+<td>返回双端队列容器可以容纳的最大元素数。</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="resize-函数"><a href="#resize-函数" class="headerlink" title="resize()函数"></a>resize()函数</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//  调整容器大小以包含 sz 元素。</span></span><br><span class="line"><span class="comment">// 若sz &lt; deque.size() , 容器会减小到从开始到sz个元素的位置；</span></span><br><span class="line"><span class="comment">// 若sz &gt;= deque.size(), 通过在末尾插入尽可能多的 c 副本来扩展内容，以达到 sz 元素的大小</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">resize</span> <span class="params">( size_type sz, T c = T() )</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	deque&lt;<span class="type">int</span>&gt; mydeque;</span><br><span class="line">	deque&lt;<span class="type">int</span>&gt;::iterator it;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> i;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// set some initial content:</span></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">1</span>; i&lt;<span class="number">10</span>; i++)</span><br><span class="line">		mydeque.<span class="built_in">push_back</span>(i);   <span class="comment">//1 2 3 4 5 6 7 8 9</span></span><br><span class="line"></span><br><span class="line">	mydeque.<span class="built_in">resize</span>(<span class="number">5</span>);      <span class="comment">//1 2 3 4 5</span></span><br><span class="line">	mydeque.<span class="built_in">resize</span>(<span class="number">8</span>, <span class="number">100</span>);    <span class="comment">//1 2 3 4 5 100 100 100</span></span><br><span class="line">	mydeque.<span class="built_in">resize</span>(<span class="number">12</span>);  <span class="comment">// 1 2 3 4 5 100 100 100 0 0 0 0 </span></span><br><span class="line">	cout &lt;&lt; mydeque.<span class="built_in">size</span>() &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">system</span>(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="insert-函数"><a href="#insert-函数" class="headerlink" title="insert()函数"></a>insert()函数</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1. 在position处插入数据x，返回值指向新插入元素的迭代器</span></span><br><span class="line"><span class="function">iterator <span class="title">insert</span> <span class="params">( iterator position, <span class="type">const</span> T&amp; x )</span></span>;    </span><br><span class="line"><span class="comment">//2. 在position处插入n个数据x</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">insert</span> <span class="params">( iterator position, size_type n, <span class="type">const</span> T&amp; x )</span></span>; </span><br><span class="line"><span class="comment">//3. 在position处将另一个容器的元素插入(l可以是vector但是必须得是同数据类型)</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">class</span> <span class="title class_">InputIterator</span>&gt;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">insert</span> <span class="params">( iterator position, InputIterator first, InputIterator last )</span></span>; </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	deque&lt;<span class="type">int</span>&gt; mydeque;</span><br><span class="line">	deque&lt;<span class="type">int</span>&gt;::iterator it;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// set some initial content:</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i&lt;<span class="number">10</span>; i++)</span><br><span class="line">		mydeque.<span class="built_in">push_back</span>(i);   <span class="comment">//1 2 3 4 5 6 7 8 9</span></span><br><span class="line">	it = mydeque.<span class="built_in">begin</span>();</span><br><span class="line">	++it;       <span class="comment">//指向第二个元素</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">//返回值返回的是指向新插入元素的迭代器</span></span><br><span class="line">	<span class="comment">//it现在指向数据10</span></span><br><span class="line">	it = mydeque.<span class="built_in">insert</span>(it, <span class="number">10</span>);     <span class="comment">// 1 10 2 3 4 5</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">//此函数没有返回值，此时it失效了！！！</span></span><br><span class="line">	mydeque.<span class="built_in">insert</span>(it, <span class="number">2</span>, <span class="number">20</span>);   <span class="comment">//1 20 20 10 2 3 4 5</span></span><br><span class="line"></span><br><span class="line">	it = mydeque.<span class="built_in">begin</span>() + <span class="number">2</span>; </span><br><span class="line">	<span class="function">vector&lt;<span class="type">int</span>&gt;  <span class="title">myvector</span><span class="params">(<span class="number">2</span>,<span class="number">30</span>)</span></span>;</span><br><span class="line">	mydeque.<span class="built_in">insert</span>(it, myvector.<span class="built_in">begin</span>(), myvector.<span class="built_in">end</span>()); </span><br><span class="line">	                                          <span class="comment">// 1 20 30 30 20 10 2 3 4 5</span></span><br><span class="line"></span><br><span class="line">	<span class="built_in">system</span>(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="swap-函数"><a href="#swap-函数" class="headerlink" title="swap()函数"></a>swap()函数</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// swap deques</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;deque&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="built_in">main</span> ()</span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> i;</span><br><span class="line">  <span class="function">deque&lt;<span class="type">int</span>&gt; <span class="title">first</span> <span class="params">(<span class="number">3</span>,<span class="number">100</span>)</span></span>;   <span class="comment">// three ints with a value of 100</span></span><br><span class="line">  <span class="function">deque&lt;<span class="type">int</span>&gt; <span class="title">second</span> <span class="params">(<span class="number">5</span>,<span class="number">200</span>)</span></span>;  <span class="comment">// five ints with a value of 200</span></span><br><span class="line"></span><br><span class="line">  first.<span class="built_in">swap</span>(second);</span><br><span class="line"></span><br><span class="line">  cout &lt;&lt; <span class="string">&quot;first contains:&quot;</span>;</span><br><span class="line">  <span class="keyword">for</span> (i=<span class="number">0</span>; i&lt;first.<span class="built_in">size</span>(); i++) cout &lt;&lt; <span class="string">&quot; &quot;</span> &lt;&lt; first[i];</span><br><span class="line"></span><br><span class="line">  cout &lt;&lt; <span class="string">&quot;\nsecond contains:&quot;</span>;</span><br><span class="line">  <span class="keyword">for</span> (i=<span class="number">0</span>; i&lt;second.<span class="built_in">size</span>(); i++) cout &lt;&lt; <span class="string">&quot; &quot;</span> &lt;&lt; second[i];</span><br><span class="line"></span><br><span class="line">  cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="erase-函数"><a href="#erase-函数" class="headerlink" title="erase()函数"></a>erase()函数</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 从deque中删除position处的元素</span></span><br><span class="line"><span class="function">iterator <span class="title">erase</span> <span class="params">( iterator position )</span></span>;</span><br><span class="line"><span class="comment">// 从deque中删除一段区间的元素</span></span><br><span class="line"><span class="function">iterator <span class="title">erase</span> <span class="params">( iterator first, iterator last )</span></span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> i;</span><br><span class="line">  deque&lt;<span class="type">unsigned</span> <span class="type">int</span>&gt; mydeque;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// set some values (from 1 to 10)</span></span><br><span class="line">  <span class="keyword">for</span> (i=<span class="number">1</span>; i&lt;=<span class="number">10</span>; i++) mydeque.<span class="built_in">push_back</span>(i);</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// erase the 6th element</span></span><br><span class="line">  mydeque.<span class="built_in">erase</span> (mydeque.<span class="built_in">begin</span>()+<span class="number">5</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// erase the first 3 elements:</span></span><br><span class="line">  mydeque.<span class="built_in">erase</span> (mydeque.<span class="built_in">begin</span>(),mydeque.<span class="built_in">begin</span>()+<span class="number">3</span>);</span><br><span class="line"></span><br><span class="line">  cout &lt;&lt; <span class="string">&quot;mydeque contains:&quot;</span>;</span><br><span class="line">  <span class="keyword">for</span> (i=<span class="number">0</span>; i&lt;mydeque.<span class="built_in">size</span>(); i++)</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot; &quot;</span> &lt;&lt; mydeque[i];</span><br><span class="line">  cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Barret</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2021/08/10/STL/%E5%BA%8F%E5%88%97%E5%BC%8F%E5%AE%B9%E5%99%A8/%E5%AE%B9%E5%99%A8_deque(%E4%B8%80)/">http://example.com/2021/08/10/STL/%E5%BA%8F%E5%88%97%E5%BC%8F%E5%AE%B9%E5%99%A8/%E5%AE%B9%E5%99%A8_deque(%E4%B8%80)/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">Barret Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/08/15/STL/%E5%BA%8F%E5%88%97%E5%BC%8F%E5%AE%B9%E5%99%A8/%E5%AE%B9%E5%99%A8_stack/"><img class="prev-cover" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">容器_stack</div></div></a></div><div class="next-post pull-right"><a href="/2021/08/10/STL/%E5%BA%8F%E5%88%97%E5%BC%8F%E5%AE%B9%E5%99%A8/%E5%AE%B9%E5%99%A8_list(%E4%B8%80)/"><img class="next-cover" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">容器list</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F14206928472%2F1000.jpg&amp;refer=http%3A%2F%2Finews.gtimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650157497&amp;t=70dfbdc4919a4e744f090628aaf5059d" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Barret</div><div class="author-info__description">Welcome Visit</div></div><div class="card-info-data is-center"><div class="card-info-data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a></div><div class="card-info-data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a></div><div class="card-info-data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/anyeyueren" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:2412704562@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#deque%E7%AE%80%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text">deque简述</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#deque%E4%B8%AD%E6%8E%A7%E5%99%A8-map"><span class="toc-number">1.1.</span> <span class="toc-text">deque中控器(map)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#deque%E8%BF%AD%E4%BB%A3%E5%99%A8"><span class="toc-number">1.2.</span> <span class="toc-text">deque迭代器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#deque%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="toc-number">1.3.</span> <span class="toc-text">deque内存管理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#deque%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0"><span class="toc-number">2.</span> <span class="toc-text">deque成员函数</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#deque%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="toc-number">2.1.</span> <span class="toc-text">deque构造函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#deque%E9%81%8D%E5%8E%86"><span class="toc-number">2.2.</span> <span class="toc-text">deque遍历</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#assign%E8%B5%8B%E5%80%BC%E5%87%BD%E6%95%B0"><span class="toc-number">2.2.1.</span> <span class="toc-text">assign赋值函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E5%80%BC%E9%9A%8F%E6%9C%BA%E8%AE%BF%E9%97%AE"><span class="toc-number">2.2.2.</span> <span class="toc-text">数值随机访问</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#resize-%E5%87%BD%E6%95%B0"><span class="toc-number">2.3.</span> <span class="toc-text">resize()函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#insert-%E5%87%BD%E6%95%B0"><span class="toc-number">2.4.</span> <span class="toc-text">insert()函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#swap-%E5%87%BD%E6%95%B0"><span class="toc-number">2.5.</span> <span class="toc-text">swap()函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#erase-%E5%87%BD%E6%95%B0"><span class="toc-number">2.6.</span> <span class="toc-text">erase()函数</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%B8%83)/" title="进程同步和信号量"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="进程同步和信号量"/></a><div class="content"><a class="title" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%B8%83)/" title="进程同步和信号量">进程同步和信号量</a><time datetime="2021-11-24T22:04:16.000Z" title="发表于 2021-11-25 06:04:16">2021-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/" title="信号量临界区保护"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="信号量临界区保护"/></a><div class="content"><a class="title" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/" title="信号量临界区保护">信号量临界区保护</a><time datetime="2021-11-24T22:04:16.000Z" title="发表于 2021-11-25 06:04:16">2021-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/29/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AD)/" title="CPU调度策略"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CPU调度策略"/></a><div class="content"><a class="title" href="/2021/10/29/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AD)/" title="CPU调度策略">CPU调度策略</a><time datetime="2021-10-28T22:04:16.000Z" title="发表于 2021-10-29 06:04:16">2021-10-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/" title="内核级线程"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="内核级线程"/></a><div class="content"><a class="title" href="/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/" title="内核级线程">内核级线程</a><time datetime="2021-10-24T22:04:16.000Z" title="发表于 2021-10-25 06:04:16">2021-10-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/17/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" title="智能指针"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="智能指针"/></a><div class="content"><a class="title" href="/2021/10/17/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" title="智能指针">智能指针</a><time datetime="2021-10-16T22:04:16.000Z" title="发表于 2021-10-17 06:04:16">2021-10-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By Barret</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

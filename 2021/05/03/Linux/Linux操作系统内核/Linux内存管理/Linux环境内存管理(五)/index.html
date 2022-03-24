@@ -1,0 +1,360 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Linux环境内存管理(五) | Barret Blog</title><meta name="keywords" content="IT"><meta name="author" content="Barret"><meta name="copyright" content="Barret"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="内存分配​    对于计算机的物理内存资源，以页为基本单元进行管理，使用page结构体进行管理，记录页的许多状态。系统在初始化时根据物理内存的大小建立一个page结构体数组mem_map，作为整个物理内存页面的仓库。 ​    对于进程而言，分为03G的用户空间和3G4G的内核空间。 ​    在用户空间中，虚拟空间被分成若干个段，这些数据段通过vm_area_struct结构体来描述。多个数据段">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux环境内存管理(五)">
+<meta property="og:url" content="http://example.com/2021/05/03/Linux/Linux%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/Linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Linux%E7%8E%AF%E5%A2%83%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86(%E4%BA%94)/index.html">
+<meta property="og:site_name" content="Barret Blog">
+<meta property="og:description" content="内存分配​    对于计算机的物理内存资源，以页为基本单元进行管理，使用page结构体进行管理，记录页的许多状态。系统在初始化时根据物理内存的大小建立一个page结构体数组mem_map，作为整个物理内存页面的仓库。 ​    对于进程而言，分为03G的用户空间和3G4G的内核空间。 ​    在用户空间中，虚拟空间被分成若干个段，这些数据段通过vm_area_struct结构体来描述。多个数据段">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650272949&t=18f99d2e597ef4e5080a0e7cdc68b6e1">
+<meta property="article:published_time" content="2021-05-03T08:04:16.000Z">
+<meta property="article:modified_time" content="2022-03-22T01:32:15.528Z">
+<meta property="article:author" content="Barret">
+<meta property="article:tag" content="IT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650272949&t=18f99d2e597ef4e5080a0e7cdc68b6e1"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2021/05/03/Linux/Linux%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/Linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Linux%E7%8E%AF%E5%A2%83%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86(%E4%BA%94)/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":50},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Linux环境内存管理(五)',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-03-22 09:32:15'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.0.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F14206928472%2F1000.jpg&amp;refer=http%3A%2F%2Finews.gtimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650157497&amp;t=70dfbdc4919a4e744f090628aaf5059d" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><div class="data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a></div><div class="data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a></div><div class="data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Barret Blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Linux环境内存管理(五)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-05-03T08:04:16.000Z" title="发表于 2021-05-03 16:04:16">2021-05-03</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-03-22T01:32:15.528Z" title="更新于 2022-03-22 09:32:15">2022-03-22</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Linux环境内存管理(五)"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="内存分配"><a href="#内存分配" class="headerlink" title="内存分配"></a>内存分配</h1><p>​    对于计算机的物理内存资源，以页为基本单元进行管理，使用<em><strong>page</strong></em>结构体进行管理，记录页的许多状态。系统在初始化时根据物理内存的大小建立一个page结构体数组mem_map，作为整个物理内存页面的仓库。</p>
+<p>​    对于进程而言，分为0<del>3G的用户空间和3G</del>4G的内核空间。</p>
+<p>​    在用户空间中，虚拟空间被分成若干个段，这些数据段通过<em><strong>vm_area_struct</strong></em>结构体来描述。多个数据段有多个vm_area_struct实例，组成一个双向链表。而该进程的进程描述符(<em><strong>task_struct</strong></em>)中的内存描述符(<em><strong>mm_struct</strong></em>)指向这个双向链表。</p>
+<blockquote>
+<p>vm_area_struct是描述进程地址空间的基本管理单元，一个进程往往需要多个vm_area_struct来描述它的用户空间虚拟地址，需要使用「链表」和「红黑树」来组织各个vm_area_struct。</p>
+<p>链表用于需要遍历全部节点的时候用，而红黑树适用于在地址空间中定位特定内存区域。内核为了内存区域上的各种不同操作都能获得高性能，所以同时使用了这两种数据结构。</p>
+</blockquote>
+<p>​    而在内核空间中，之前提到过内核空间的「动态内存映射区」，这个区域由内核函数vmalloc分配，vmalloc 分配的地址则限于vmalloc_start与vmalloc_end之间。每一块vmalloc分配的内核虚拟内存都对应一个<em><strong>vm_struct</strong></em>结构体。</p>
+<blockquote>
+<p>vmalloc 分配的线性地址所对应的物理页可能处于低端内存，也可能处于高端内存。特点是：线性空间连续，但是对应的物理地址空间不一定连续。与用户空间的虚拟地址特性一样，这些虚拟地址与物理内存没有简单的映射关系，必须通过内核页表才可转换为物理地址或物理页，它们有可能尚未被映射，当发生缺页时才真正分配物理页面。</p>
+</blockquote>
+<img src="https://cdn.jsdelivr.net/gh/anyeyueren/picgoimg/studyImg/内存映射.png" alt="malloc的chunk机制" style="zoom:60%;" />
+​    在前面的章节中说过，物理内存的页分配器采用的是伙伴算法，使用的是伙伴分配器。此外，内核还提供把页划分成小内存块分配的块分配器，提供分配内存的接口kmalloc()和kfree()，一共支持3个分配器：slab分配器、slub分配器和slob分配器。
+
+<p>​    内核空间的扩展功能是：不连续的页分配器提供分配内存的接口vmalloc和释放内存接口vfree。在内存碎片化的时候，能够申请到连续物理页的成功率很低，此时就可以申请不连续的物理页，此时虚拟地址连续而物理地址不连续。</p>
+<hr>
+<h2 id="用户空间内存分配malloc"><a href="#用户空间内存分配malloc" class="headerlink" title="用户空间内存分配malloc"></a>用户空间内存分配malloc</h2><p>​    在开发c或c++时，经常需要分配内存，如今常用的分配内存函数为malloc,tcmalloc,jemalloc,其中属于malloc使用最平常，因为属于c标准库函数。在了解malloc之前必须先了解两个系统调用<em><strong>brk(sbrk)<em><strong>和</strong></em>mmap</strong></em>函数，从而向内核以页为单位申请内存，然后在划分很小的内存块分配给应用程序。</p>
+<blockquote>
+<p>brk：当malloc使用堆动态的分配内存时，使用的就是brk()系统调用，该调用的作用就是扩大或者缩小进程堆空间。brk是将数据段(.data)的最高地址指针_edata往高地址推。(分配内存时往高处推只分配虚拟空间，不对应物理内存，第一次读写数据时引起内核缺页中断，内核才分配对应物理内存，然后虚拟地址空间建立映射关系)</p>
+</blockquote>
+<blockquote>
+<p>mmap：将文件映射到堆和栈之间的虚拟内存，将IO变为读写内存操作，先从设备加载文件，建立address space，并缓存更新页表之后返回虚拟地址。对于堆申请来讲，mmap是映射内存空间到物理内存，在堆栈之间的文件映射区找到一块空闲内存。实际调用sys_mmap在内存映射区分配虚拟页，sys_munmap用来释放虚拟页；（如果一个进程想要映射一个文件到自己的虚拟内存空间，也要通过mmap系统调用，这时mmap是映射内存空间物理内存，再到文件）</p>
+</blockquote>
+<p>​    当申请小内存时，malloc使用sbrk分配内存；当申请大内存时，使用mmap函数申请内存，但是需要注意的是这里只是分配了虚拟内存，还没有映射到物理内存，只有当访问申请内存时，才会因为缺页异常，内核分配物理内存。</p>
+<img src="https://cdn.jsdelivr.net/gh/anyeyueren/picgoimg/studyImg/malloc内存分配.png" style="zoom:50%;" />
+
+<ul>
+<li><p>分配内存 &lt; <code>DEFAULT_MMAP_THRESHOLD</code>，走__brk，从内存池获取，失败的话走brk系统调用；</p>
+</li>
+<li><p>分配内存 &gt; <code>DEFAULT_MMAP_THRESHOLD</code>，走__mmap，直接调用mmap系统调用；</p>
+<p>其中，<code>DEFAULT_MMAP_THRESHOLD</code>默认为128k，可通过<code>mallopt</code>进行设置。</p>
+</li>
+</ul>
+<hr>
+<h3 id="brk和sbrk"><a href="#brk和sbrk" class="headerlink" title="brk和sbrk"></a>brk和sbrk</h3><p>​    brk函数对应的就是“堆”的操作，堆用一对 brk_start 和 brk_end ，变量描述其大小，只有[ brk_start ,brk_end ]范围内的内存，才可以读写。brk函数的入参就是指定堆的结束地址，也就是说当前的堆指针为0x1000，如果入参是0x2000，那么堆指针就直接被设置成0x2000，堆指针向上移动了0x1000(实际上有对齐)，那么就是申请了0x1000大小的内存。brk()返回0表示成功，返回-1表示失败，一般指的是没有内存了。</p>
+<p>​    sbrk的入参与返回值都和brk不一样，brk的入参是一个绝对地址，表示自己想要设置的brk_end 值，而sbrk的入参是相对地址，sbrk的返回是新设置的brk_end。从下面的例子来区分两个函数的区别。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="type">char</span> *brk_end = <span class="literal">NULL</span>;</span><br><span class="line">        <span class="comment">/*表示自己想扩展堆大小0字节</span></span><br><span class="line"><span class="comment">        *由于sbrk返回的是新的brk_end，所以sbrk(0)就能获取到当前</span></span><br><span class="line"><span class="comment">        *的brk_end</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">        <span class="type">char</span> *p = sbrk(<span class="number">0</span>);                      <span class="comment">//一个技巧就是通过sbrk(0)获取当前的堆的结束地址</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;current brk end:%p\n&quot;</span>,p);</span><br><span class="line">        <span class="comment">/*brk的入参是绝对地址，表示自己想要拓展brk_end至p+4096*/</span></span><br><span class="line">        brk(p+<span class="number">4096</span>);</span><br><span class="line">        <span class="comment">/*再次尝试获取当前的brk_end*/</span></span><br><span class="line">        brk_end = sbrk(<span class="number">0</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;current brk end:%p\n&quot;</span>,brk_end);</span><br><span class="line">&#125;</span><br><span class="line">输出结果：</span><br><span class="line">    current brk end:<span class="number">0x98e000</span></span><br><span class="line">    current brk end:<span class="number">0x98f000</span></span><br></pre></td></tr></table></figure>
+
+<p>​    前面说到申请到的申请分配的实际上是虚拟内存，只有进行访问产生缺页中断才会映射物理内存。这里需要注意地址映射都是以PAGE_SIZE为单位去映射的。从下面的案例分析：理论上，堆扩大了100字节，只有p[0, 99]才可以写，但是为什么p[100]没事，p[4095]没事，p[4096]就不不行了？因为映射都是按照页为单位。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="type">char</span> *brk_end = <span class="literal">NULL</span>;</span><br><span class="line">        <span class="comment">/*表示自己想扩展堆大小0字节*/</span></span><br><span class="line">        <span class="type">char</span> *p = sbrk(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        brk(p+<span class="number">100</span>);</span><br><span class="line">        p[<span class="number">0</span>] = <span class="number">1</span>;<span class="comment">/*正常*/</span></span><br><span class="line">        p[<span class="number">99</span>] = <span class="number">1</span>;<span class="comment">/*正常*/</span></span><br><span class="line">        p[<span class="number">100</span>] = <span class="number">1</span>;<span class="comment">/*正常*/</span></span><br><span class="line">        p[<span class="number">4095</span>] = <span class="number">1</span>;<span class="comment">/*正常*/</span></span><br><span class="line">        p[<span class="number">4096</span>] = <span class="number">1</span>;<span class="comment">/*segment fault*/</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    再来看看内存布局的实现，这里需要分析linux内核源码中的sys_brk函数。brk(addr)对应的内核函数，不考虑细节问题，sys_brk只是执行了current-&gt;brk &#x3D; brk，设置新的end_brk值，真正实现内存分配的代码时***do_brk()***。</p>
+<blockquote>
+<p>do_brk()函数可以查看源码，代码逻辑很简单，实际就是创建一个VMA，一个struct vm_area_struct对象，在这个VMA中有两个数值很重要，就是vm_start和vm_end，记录着虚拟内存的起始地址和结束地址。如果想看进程的VMA，可以在cat &#x2F;proc&#x2F;pid&#x2F;maps下看，pid是具体的进程号。</p>
+<p>VMA被挂在mm_struct的mm_rb下，可以通过红黑树快速查找。</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">SYSCALL_DEFINE1(brk, <span class="type">unsigned</span> <span class="type">long</span>, brk)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> rlim, retval;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> newbrk, oldbrk;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">mm_struct</span> *<span class="title">mm</span> =</span> current-&gt;mm;     <span class="comment">/*首先第一步是获取当前进程的mm结构体，内部会记录进程的栈段*/</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> min_brk;</span><br><span class="line">	<span class="type">bool</span> populate;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/* start_brk是进程创建时，指定这个进程堆的起始地址，这个值在进程的生命周期内是不会改变的。*/</span></span><br><span class="line">    <span class="comment">/* 当然,每个进程的其值也不是固定的，这取决于是否开启/proc/sys/kernel/randomize_va_space的值*/</span></span><br><span class="line">	min_brk = mm-&gt;start_brk;</span><br><span class="line">	<span class="keyword">if</span> (brk &lt; min_brk)  <span class="comment">/*参brk小于start_brk，那么显然是一次“异常”的调用*/</span></span><br><span class="line">		<span class="keyword">goto</span> out;</span><br><span class="line">    ......</span><br><span class="line">	</span><br><span class="line">	newbrk = PAGE_ALIGN(brk);      <span class="comment">/*使用PAGE_ALIGN页对齐方便映射*/</span></span><br><span class="line">	oldbrk = PAGE_ALIGN(mm-&gt;brk);  <span class="comment">/*mm-&gt;brk可以理解为end_brk，即当前进程堆的末尾*/</span></span><br><span class="line">	<span class="keyword">if</span> (oldbrk == newbrk)    <span class="comment">/*该内存空间已经被映射过了*/</span></span><br><span class="line">		<span class="keyword">goto</span> set_brk;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* 调用free就会满足这个条件，减少堆. */</span></span><br><span class="line">	<span class="keyword">if</span> (brk &lt;= mm-&gt;brk) &#123;</span><br><span class="line">		<span class="keyword">if</span> (!do_munmap(mm, newbrk, oldbrk-newbrk))</span><br><span class="line">			<span class="keyword">goto</span> set_brk;</span><br><span class="line">		<span class="keyword">goto</span> out;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* 检查现有的mmap映射. */</span></span><br><span class="line">	<span class="keyword">if</span> (find_vma_intersection(mm, oldbrk, newbrk+PAGE_SIZE))</span><br><span class="line">		<span class="keyword">goto</span> out;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* do_brk函数才是brk函数的核心，里面创建一个vma，然后instert全局链表中. */</span></span><br><span class="line">	<span class="keyword">if</span> (do_brk(oldbrk, newbrk-oldbrk) != oldbrk)</span><br><span class="line">		<span class="keyword">goto</span> out;</span><br><span class="line"></span><br><span class="line">set_brk:</span><br><span class="line">	mm-&gt;brk = brk;</span><br><span class="line">	populate = newbrk &gt; oldbrk &amp;&amp; (mm-&gt;def_flags &amp; VM_LOCKED) != <span class="number">0</span>;</span><br><span class="line">	up_write(&amp;mm-&gt;mmap_sem);</span><br><span class="line">	<span class="keyword">if</span> (populate)</span><br><span class="line">		mm_populate(oldbrk, newbrk - oldbrk);</span><br><span class="line">	<span class="keyword">return</span> brk;<span class="comment">/*注意返回的是brk，而不是pagesize过的newbrk*/</span></span><br><span class="line"></span><br><span class="line">out:</span><br><span class="line">	retval = mm-&gt;brk;</span><br><span class="line">	up_write(&amp;mm-&gt;mmap_sem);</span><br><span class="line">	<span class="keyword">return</span> retval;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    源码中的mm_populate()函数，当mlockall()系统调用将进程中全部的进程虚拟地址空间加锁，防止内存被交换掉，此时mm-&gt;def_flags会置位VM_LOEKED，此时会调用mm_populate立刻分配物理内存并且建立映射关系。</p>
+<p>​    _do_munmap就是删除用户空间地址newbrk到newbrk-oldbrk的vma线性区，并删除vma线性区对应的页表项，释放相对应的页。</p>
+<hr>
+<h3 id="mmap函数"><a href="#mmap函数" class="headerlink" title="mmap函数"></a>mmap函数</h3><p>​    mmap和munmap函数定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"><span class="type">void</span> *<span class="title function_">mmap</span><span class="params">(<span class="type">void</span> *addr, size\<span class="type">_t</span> length, <span class="type">int</span> prot, <span class="type">int</span> flags, <span class="type">int</span> fd, off\<span class="type">_t</span> offset)</span>;</span><br><span class="line"><span class="type">int</span> <span class="title function_">munmap</span><span class="params">(<span class="type">void</span> *addr, <span class="type">size_t</span> length)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>​    mmap函数有两种用法：</p>
+<ol>
+<li>将磁盘中的文件映射到内存中；</li>
+<li>匿名映射机制，匿名映射不映射磁盘文件，而是向映射区申请一块内存；</li>
+</ol>
+<blockquote>
+<p>下面是mmap函数的参数分析：</p>
+<p>(1) addr和length</p>
+<p>​     addr是内存首地址，length参数为内存的长度。</p>
+<p>(2) port</p>
+<p>​    期望的内存保护标志,不能与文件的打开模式冲突。下面各个值中可以通过or运算组合在一起。</p>
+<p>  PROT_EXEC：页内容可以被执行；</p>
+<p>  PROT_READ：页内容可以被读取；</p>
+<p>  PROT_WRITE：页可以被写入；</p>
+<p>  PROT_NONE：页不可访问；</p>
+<p>(3) flags</p>
+<p>​    指定映射对象的类型,映射选项和映射页是否可以共享。它的值可以是一个或者多个以下位的组合体。</p>
+<p>​    MAP_FIXED ：使用指定的映射起始地址，如果由start和len参数指定的内存区重叠于现存的映射空间，重叠部分将会被丢弃。如果指定的起始地址不可用，操作将会失败。并且起始地址必须落在页的边界上；</p>
+<p>​    MAP_SHARED ：与其它所有映射这个对象的进程共享映射空间。对共享区的写入，相当于输出到文件。直到msync()或者munmap()被调用，文件实际上不会被更新；</p>
+<p>​    MAP_PRIVATE ：建立一个写入时拷贝的私有映射。内存区域的写入不会影响到原文件。这个标志和以上标志是互斥的，只能使用其中一个；</p>
+<p>​    MAP_LOCKED ：锁定映射区的页面，从而防止页面被交换出内存；</p>
+<p>​    MAP_ANONYMOUS ：匿名映射，映射区不与任何文件关联；</p>
+<p>(4) fd</p>
+<p>​    fd为映射的文件，如果是匿名映射，可以设为-1;</p>
+<p>(5) offset</p>
+<p>​    offset为被映射文件内容的起点偏移;</p>
+</blockquote>
+<p>​    malloc函数使用MAP_ANONYMOUS匿名映射，length为申请内存块大小，返回内存块的首地址。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">SYSCALL_DEFINE6(mmap_pgoff, <span class="type">unsigned</span> <span class="type">long</span>, addr, <span class="type">unsigned</span> <span class="type">long</span>, len,</span><br><span class="line">		<span class="type">unsigned</span> <span class="type">long</span>, prot, <span class="type">unsigned</span> <span class="type">long</span>, flags,</span><br><span class="line">		<span class="type">unsigned</span> <span class="type">long</span>, fd, <span class="type">unsigned</span> <span class="type">long</span>, pgoff)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">file</span> *<span class="title">file</span> =</span> <span class="literal">NULL</span>;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> retval = -EBADF;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!(flags &amp; MAP_ANONYMOUS)) &#123;   <span class="comment">//非匿名映射，文件映射到用户进程</span></span><br><span class="line">		audit_mmap_fd(fd, flags);</span><br><span class="line">		<span class="keyword">if</span> (unlikely(flags &amp; MAP_HUGETLB))</span><br><span class="line">			<span class="keyword">return</span> -EINVAL;</span><br><span class="line">		file = fget(fd);  <span class="comment">//通过fd获取file，从而获取inode信息，关联磁盘文件，后面关闭fd</span></span><br><span class="line">		<span class="keyword">if</span> (!file)</span><br><span class="line">			<span class="keyword">goto</span> out;</span><br><span class="line">		<span class="keyword">if</span> (is_file_hugepages(file))</span><br><span class="line">			len = ALIGN(len, huge_page_size(hstate_file(file)));</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (flags &amp; MAP_HUGETLB) &#123;</span><br><span class="line">		<span class="keyword">struct</span> user_struct *user = <span class="literal">NULL</span>;</span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">hstate</span> *<span class="title">hs</span> =</span> hstate_sizelog((flags &gt;&gt; MAP_HUGE_SHIFT) &amp;</span><br><span class="line">						   SHM_HUGE_MASK);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (!hs)</span><br><span class="line">			<span class="keyword">return</span> -EINVAL;</span><br><span class="line"></span><br><span class="line">		len = ALIGN(len, huge_page_size(hs));</span><br><span class="line">		<span class="comment">/*</span></span><br><span class="line"><span class="comment">		 * VM_NORESERVE is used because the reservations will be</span></span><br><span class="line"><span class="comment">		 * taken when vm_ops-&gt;mmap() is called</span></span><br><span class="line"><span class="comment">		 * A dummy user value is used because we are not locking</span></span><br><span class="line"><span class="comment">		 * memory so no accounting is necessary</span></span><br><span class="line"><span class="comment">		 */</span></span><br><span class="line">		file = hugetlb_file_setup(HUGETLB_ANON_FILE, len,</span><br><span class="line">				VM_NORESERVE,</span><br><span class="line">				&amp;user, HUGETLB_ANONHUGE_INODE,</span><br><span class="line">				(flags &gt;&gt; MAP_HUGE_SHIFT) &amp; MAP_HUGE_MASK);</span><br><span class="line">		<span class="keyword">if</span> (IS_ERR(file))</span><br><span class="line">			<span class="keyword">return</span> PTR_ERR(file);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	flags &amp;= ~(MAP_EXECUTABLE | MAP_DENYWRITE);</span><br><span class="line"><span class="comment">//做完安全权限检查后，调用主要实现函数do_mmap_pgoff</span></span><br><span class="line">	retval = vm_mmap_pgoff(file, addr, len, prot, flags, pgoff);</span><br><span class="line">	<span class="keyword">if</span> (file)</span><br><span class="line">		fput(file);</span><br><span class="line">out:</span><br><span class="line">	<span class="keyword">return</span> retval;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    mmap函数中最核心的函数还是do_mmap_pgoff函数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">unsigned</span> <span class="type">long</span> <span class="title function_">do_mmap_pgoff</span><span class="params">(<span class="keyword">struct</span> file *file, <span class="type">unsigned</span> <span class="type">long</span> addr,</span></span><br><span class="line"><span class="params">			<span class="type">unsigned</span> <span class="type">long</span> len, <span class="type">unsigned</span> <span class="type">long</span> prot,</span></span><br><span class="line"><span class="params">			<span class="type">unsigned</span> <span class="type">long</span> flags, <span class="type">unsigned</span> <span class="type">long</span> pgoff,</span></span><br><span class="line"><span class="params">			<span class="type">unsigned</span> <span class="type">long</span> *populate)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">mm_struct</span> * <span class="title">mm</span> =</span> current-&gt;mm;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">inode</span> *<span class="title">inode</span>;</span></span><br><span class="line">	<span class="type">vm_flags_t</span> vm_flags;</span><br><span class="line"></span><br><span class="line">	*populate = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Does the application expect PROT_READ to imply PROT_EXEC?</span></span><br><span class="line"><span class="comment">	 *</span></span><br><span class="line"><span class="comment">	 * (the exception is when the underlying filesystem is noexec</span></span><br><span class="line"><span class="comment">	 *  mounted, in which case we dont add PROT_EXEC.)</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">if</span> ((prot &amp; PROT_READ) &amp;&amp; (current-&gt;personality &amp; READ_IMPLIES_EXEC))</span><br><span class="line">		<span class="keyword">if</span> (!(file &amp;&amp; (file-&gt;f_path.mnt-&gt;mnt_flags &amp; MNT_NOEXEC)))</span><br><span class="line">			prot |= PROT_EXEC;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!len)</span><br><span class="line">		<span class="keyword">return</span> -EINVAL;</span><br><span class="line">    <span class="comment">// 对于非MAP_FIXED， addr不能小于mmap_min_addr大小，如果小于则使用mmap</span></span><br><span class="line">	<span class="keyword">if</span> (!(flags &amp; MAP_FIXED))</span><br><span class="line">		addr = round_hint_to_min(addr);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* 此处检查的内容是len是否溢出，不是判断len是否为0 */</span></span><br><span class="line">	len = PAGE_ALIGN(len);</span><br><span class="line">	<span class="keyword">if</span> (!len)</span><br><span class="line">		<span class="keyword">return</span> -ENOMEM;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* offset 是否溢出 */</span></span><br><span class="line">	<span class="keyword">if</span> ((pgoff + (len &gt;&gt; PAGE_SHIFT)) &lt; pgoff)</span><br><span class="line">               <span class="keyword">return</span> -EOVERFLOW;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*mmap个数限制 */</span></span><br><span class="line">	<span class="keyword">if</span> (mm-&gt;map_count &gt; sysctl_max_map_count)</span><br><span class="line">		<span class="keyword">return</span> -ENOMEM;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*在创建的ma区域之前首先寻找一个足够大小空闲区域，此函数就是查找未映射的区域，返回值addr就是这段空间首地址*/</span></span><br><span class="line">	addr = get_unmapped_area(file, addr, len, pgoff, flags);</span><br><span class="line">	<span class="keyword">if</span> (addr &amp; ~PAGE_MASK)</span><br><span class="line">		<span class="keyword">return</span> addr;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* 根据prot/flags以及mm-&gt;flags来得到vm_flags*/</span></span><br><span class="line">	vm_flags = calc_vm_prot_bits(prot) | calc_vm_flag_bits(flags) |</span><br><span class="line">			mm-&gt;def_flags | VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (flags &amp; MAP_LOCKED)</span><br><span class="line">		<span class="keyword">if</span> (!can_do_mlock())</span><br><span class="line">			<span class="keyword">return</span> -EPERM;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* mlock MCL_FUTURE? */</span></span><br><span class="line">	<span class="keyword">if</span> (vm_flags &amp; VM_LOCKED) &#123;</span><br><span class="line">		<span class="type">unsigned</span> <span class="type">long</span> locked, lock_limit;</span><br><span class="line">		locked = len &gt;&gt; PAGE_SHIFT;</span><br><span class="line">		locked += mm-&gt;locked_vm;</span><br><span class="line">		lock_limit = rlimit(RLIMIT_MEMLOCK);</span><br><span class="line">		lock_limit &gt;&gt;= PAGE_SHIFT;</span><br><span class="line">		<span class="keyword">if</span> (locked &gt; lock_limit &amp;&amp; !capable(CAP_IPC_LOCK))</span><br><span class="line">			<span class="keyword">return</span> -EAGAIN;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	inode = file ? file_inode(file) : <span class="literal">NULL</span>;</span><br><span class="line">    <span class="comment">//文件映射情况处理，主要更新vm_files</span></span><br><span class="line">	<span class="keyword">if</span> (file) &#123;</span><br><span class="line">		<span class="keyword">switch</span> (flags &amp; MAP_TYPE) &#123;</span><br><span class="line">		<span class="keyword">case</span> MAP_SHARED:  <span class="comment">//共享环境映射</span></span><br><span class="line">			<span class="keyword">if</span> ((prot&amp;PROT_WRITE) &amp;&amp; !(file-&gt;f_mode&amp;FMODE_WRITE))</span><br><span class="line">				<span class="keyword">return</span> -EACCES;</span><br><span class="line"></span><br><span class="line">			<span class="comment">/*</span></span><br><span class="line"><span class="comment">			 * Make sure we don&#x27;t allow writing to an append-only</span></span><br><span class="line"><span class="comment">			 * file..</span></span><br><span class="line"><span class="comment">			 */</span></span><br><span class="line">			<span class="keyword">if</span> (IS_APPEND(inode) &amp;&amp; (file-&gt;f_mode &amp; FMODE_WRITE))</span><br><span class="line">				<span class="keyword">return</span> -EACCES;</span><br><span class="line"></span><br><span class="line">			<span class="comment">/*</span></span><br><span class="line"><span class="comment">			 * Make sure there are no mandatory locks on the file.</span></span><br><span class="line"><span class="comment">			 */</span></span><br><span class="line">			<span class="keyword">if</span> (locks_verify_locked(inode))</span><br><span class="line">				<span class="keyword">return</span> -EAGAIN;</span><br><span class="line"></span><br><span class="line">			vm_flags |= VM_SHARED | VM_MAYSHARE;</span><br><span class="line">			<span class="keyword">if</span> (!(file-&gt;f_mode &amp; FMODE_WRITE))</span><br><span class="line">				vm_flags &amp;= ~(VM_MAYWRITE | VM_SHARED);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">case</span> MAP_PRIVATE:   <span class="comment">//私有文件映射</span></span><br><span class="line">			<span class="keyword">if</span> (!(file-&gt;f_mode &amp; FMODE_READ))</span><br><span class="line">				<span class="keyword">return</span> -EACCES;</span><br><span class="line">			<span class="keyword">if</span> (file-&gt;f_path.mnt-&gt;mnt_flags &amp; MNT_NOEXEC) &#123;</span><br><span class="line">				<span class="keyword">if</span> (vm_flags &amp; VM_EXEC)</span><br><span class="line">					<span class="keyword">return</span> -EPERM;</span><br><span class="line">				vm_flags &amp;= ~VM_MAYEXEC;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">if</span> (!file-&gt;f_op || !file-&gt;f_op-&gt;mmap)</span><br><span class="line">				<span class="keyword">return</span> -ENODEV;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">default</span>:</span><br><span class="line">			<span class="keyword">return</span> -EINVAL;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125; </span><br><span class="line">    <span class="comment">//如果文件名为空，就是匿名映射</span></span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">switch</span> (flags &amp; MAP_TYPE) &#123;   <span class="comment">//匿名映射情况处理操作</span></span><br><span class="line">		<span class="keyword">case</span> MAP_SHARED:     <span class="comment">//共享匿名映射</span></span><br><span class="line">			<span class="comment">/*忽视pgoff*/</span></span><br><span class="line">			pgoff = <span class="number">0</span>;</span><br><span class="line">			vm_flags |= VM_SHARED | VM_MAYSHARE;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		<span class="keyword">case</span> MAP_PRIVATE:</span><br><span class="line">			<span class="comment">/*</span></span><br><span class="line"><span class="comment">			 * Set pgoff according to addr for anon_vma.</span></span><br><span class="line"><span class="comment">			 */</span></span><br><span class="line">			pgoff = addr &gt;&gt; PAGE_SHIFT;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		<span class="keyword">default</span>:</span><br><span class="line">			<span class="keyword">return</span> -EINVAL;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Set &#x27;VM_NORESERVE&#x27; if we should not account for the</span></span><br><span class="line"><span class="comment">	 * memory use of this mapping.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">if</span> (flags &amp; MAP_NORESERVE) &#123;</span><br><span class="line">		<span class="comment">/* We honor MAP_NORESERVE if allowed to overcommit */</span></span><br><span class="line">		<span class="keyword">if</span> (sysctl_overcommit_memory != OVERCOMMIT_NEVER)</span><br><span class="line">			vm_flags |= VM_NORESERVE;</span><br><span class="line"></span><br><span class="line">		<span class="comment">/* hugetlb applies strict overcommit unless MAP_NORESERVE */</span></span><br><span class="line">		<span class="keyword">if</span> (file &amp;&amp; is_file_hugepages(file))</span><br><span class="line">			vm_flags |= VM_NORESERVE;</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="comment">//匿名映射区不存在，则实际创建一个vma</span></span><br><span class="line">	addr = mmap_region(file, addr, len, vm_flags, pgoff);</span><br><span class="line">	<span class="keyword">if</span> (!IS_ERR_VALUE(addr) &amp;&amp;</span><br><span class="line">	    ((vm_flags &amp; VM_LOCKED) ||</span><br><span class="line">	     (flags &amp; (MAP_POPULATE | MAP_NONBLOCK)) == MAP_POPULATE))</span><br><span class="line">		*populate = len;</span><br><span class="line">	<span class="keyword">return</span> addr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<h3 id="malloc函数的chunk机制"><a href="#malloc函数的chunk机制" class="headerlink" title="malloc函数的chunk机制"></a>malloc函数的chunk机制</h3><p>​    由于brk&#x2F;sbrk&#x2F;mmap属于系统调用，如果每次申请内存，都调用这三个函数中的一个，那么每次都要产生系统调用开销，这是非常影响性能的；其次，这样申请的内存容易产生碎片，因为堆是从低地址到高地址，如果低地址的内存没有被释放，高地址的内存就不能被回收。</p>
+<p>​    鉴于此，malloc采用的是内存池的实现方式，malloc内存池实现方式更类似于STL分配器和memcached的内存池，先申请一大块内存，然后将内存分成不同大小的内存块，然后用户申请内存时，直接从内存池中选择一块相近的内存块即可。</p>
+<p>​    malloc将内存分成了大小不同的chunk，然后通过bins来组织起来。malloc将相似大小的chunk(即图中同一个链表上的chunk大小差不多)用双向链表连接起来，这样一个链表被称为一个bin，malloc一共维护了128个bin，并使用一个数组来存储这些bin。</p>
+<blockquote>
+<ul>
+<li>bins[0]目前没有使用；</li>
+<li>bins[1]的链表称为<code>unsorted_list</code>，用于维护free释放的chunk；</li>
+<li>ins[2,63)的区间称为<code>small_bins</code>，用于维护＜512字节的内存块，其中每个元素对应的链表中的chunk大小相同，均为index*8；</li>
+<li>bins[64,127)称为<code>large_bins</code>，用于维护&gt;512字节的内存块，每个元素对应的链表中的chunk大小不同，index越大，链表中chunk的内存大小相差越大，例如: 下标为64的chunk大小介于[512, 512+64)，下标为95的chunk大小介于[2k+1,2k+512)。同一条链表上的chunk，按照从小到大的顺序排列。</li>
+</ul>
+</blockquote>
+<img src="https://cdn.jsdelivr.net/gh/anyeyueren/picgoimg/studyImg/malloc的chunk机制.png" alt="malloc的chunk机制" style="zoom:60%;" />
+
+<p>​    glibc在内存池中查找合适的chunk时，采用<strong>最佳适应</strong>的伙伴算法。举例：</p>
+<blockquote>
+<ol>
+<li>如果分配内存&lt;512字节，则通过内存大小定位到smallbins对应的index上(<code>floor(size/8)</code>)</li>
+</ol>
+<blockquote>
+<ul>
+<li>如果smallbins[index]为空，进入步骤3；</li>
+<li>如果smallbins[index]非空，直接返回第一个chunk；</li>
+</ul>
+</blockquote>
+<ol start="2">
+<li>如果分配内存&gt;512字节，则定位到largebins对应的index上</li>
+</ol>
+<blockquote>
+<ul>
+<li>如果largebins[index]为空，进入步骤3；</li>
+<li>如果largebins[index]非空，扫描链表，找到第一个大小最合适的chunk，如size&#x3D;12.5K，则使用chunk B，剩下的0.5k放入unsorted_list中；</li>
+</ul>
+</blockquote>
+<ol start="3">
+<li><p>遍历unsorted_list，查找合适size的chunk，如果找到则返回；否则，将这些chunk都归类放到smallbins和largebins里面；</p>
+</li>
+<li><p>index++从更大的链表中查找，直到找到合适大小的chunk为止，找到后将chunk拆分，并将剩余的加入到unsorted_list中；</p>
+</li>
+<li><p>如果还没有找到，那么使用top chunk；</p>
+</li>
+<li><p>或者，内存&lt;128k，使用brk；内存&gt;128k，使用mmap获取新内存；</p>
+</li>
+</ol>
+</blockquote>
+<h4 id="top-chunk"><a href="#top-chunk" class="headerlink" title="top chunk"></a>top chunk</h4><p>​    <code>top chunk</code>是堆顶的chunk，堆顶指针brk位于top chunk的顶部。移动brk指针，即可扩充top chunk的大小。<strong>当<code>top chunk</code>大小超过128k(可配置)时，会触发<code>malloc_trim</code>操作，调用<code>sbrk(-size)</code>将内存归还操作系统</strong>。</p>
+<p>​    当free释放内存时，有两种情况：</p>
+<ul>
+<li>chunk和top chunk相邻，则和top chunk合并；</li>
+<li>chunk和top chunk不相邻，则直接插入到<code>unsorted_list</code>中；</li>
+</ul>
+<hr>
+<h4 id="chunk结构"><a href="#chunk结构" class="headerlink" title="chunk结构"></a>chunk结构</h4><p>​    malloc利用chunk来管理内存块，malloc就是由不同大小的chunk链表组成的。上图中，malloc会给用户分配的空间的前后加上一些控制信息，用这样的方法来记录分配的信息。<em><strong>chunk指针指向chunk开始的地方,图中的mem指针才是真正返回给用户的内存指针</strong></em>。</p>
+<blockquote>
+<p>P标志：表示前一个是否在使用中，p为0表示前一个chunk为空闲，这时chunk的prev_size才有效，prev_size表示前一个chunk的size，程序可以使用这个值找到前一个chunk开始地址。当p为1时，表示前一个chunk正在使用中，此时prev_size失效。</p>
+<p>M标志：表示当前 chunk 是从哪个内存区域获得的虚拟内存。<strong>M 为 1 表示该 chunk 是从 mmap 映射区域分配的,否则是从 heap 区域分配的</strong>。</p>
+<p>A标志：表示该 chunk 属于主分配区或者非主分配区,如果属于非主分配区,将该位置为 1,否则置为 0。</p>
+</blockquote>
+<p>​    当chunk空闲时，其M状态是不存在的，只有AP状态，原本是用户数据区的地方存储了四个指针，<strong>指针fd指向后一个空闲的chunk,而bk指向前一个空闲的chunk</strong>，malloc通过这两个指针将大小相近的chunk连成一个双向链表。（在large bin中的空闲chunk，还有两个指针，fd_nextsize和bk_nextsize，用于加快在large bin中查找最近匹配的空闲chunk）</p>
+<hr>
+<h2 id="kmalloc和vmalloc"><a href="#kmalloc和vmalloc" class="headerlink" title="kmalloc和vmalloc"></a>kmalloc和vmalloc</h2><p>​    kmalloc函数和vmalloc函数都是内核程序中分配内核的内存，两者区别如下：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>kmalloc</th>
+<th>vmalloc</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>映射区域</td>
+<td>kmalloc分配的内存处于3GB ~ high_memory之间，这段内核空间和物理内存之间映射一一对应，简单的线性映射；</td>
+<td>vmalloc分配的内存处于VMALLOC_START ~ 4GB，分配连续的虚拟内存，但是在物理上不一定连续；与物理地址没有简单的转换关系；</td>
+</tr>
+<tr>
+<td>释放函数</td>
+<td>kfree()</td>
+<td>vfree()</td>
+</tr>
+<tr>
+<td>申请内存连续性</td>
+<td>kmalloc函数可以确保页在物理上是连续的；</td>
+<td>vmalloc分配的物理地址无需连续；</td>
+</tr>
+<tr>
+<td>连续性</td>
+<td>kmalloc申请的是<strong>较小</strong>的<strong>连续的物理内存</strong>，虚拟地址上也是连续的；</td>
+<td>vmalloc用于申请较大的内存空间，虚拟内存是连续，但是在物理上它们不要求连续；</td>
+</tr>
+<tr>
+<td>使用场景</td>
+<td>kmalloc分配内存是基于slab，且物理地址和逻辑地址都是连续的，出于性能考虑内核代码大多调用kmalloc()；</td>
+<td>vmalloc()仅在绝对必要时才会使用，因为vmalloc()函数为了把物理上不连续的页面转换为虚拟地址空间上连续的页，必须专门建立页表项，且通过 vmalloc()获得的页必须一个一个的进行映射（因为它们物理上不是连续的）；</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>kmalloc()、kzalloc()、vmalloc() 共同点：</p>
+<ol>
+<li>用于申请内核空间的内存；</li>
+<li>内存以字节为单位进行分配；</li>
+<li>所分配的内存虚拟地址上连续；</li>
+</ol>
+</blockquote>
+<p>​    kmalloc和get_free_page最终调用实现是相同的，只不过在调用最终函数时所传的flag不同而已。除非被阻塞否则他执行的速度非常快，而且不对获得空间清零。get_free_page()申请的内存是一整页，一页的大小一般是128K。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//kmalloc()</span></span><br><span class="line"><span class="type">void</span> *<span class="title function_">kmalloc</span><span class="params">(<span class="type">size_t</span> size, <span class="type">gfp_t</span> flags)</span>;</span><br><span class="line">较常用的 flags（分配内存的方法）：</span><br><span class="line"></span><br><span class="line">GFP_ATOMIC —— 分配内存的过程是一个原子过程，分配内存的过程不会被（高优先级进程或中断）打断；</span><br><span class="line">GFP_KERNEL —— 正常分配内存；</span><br><span class="line">GFP_DMA —— 给 DMA 控制器分配内存，需要使用该标志（DMA要求分配虚拟地址和物理地址连续）。</span><br><span class="line">flags 的参考用法：</span><br><span class="line">　|– 进程上下文，可以睡眠　　　　　GFP_KERNEL</span><br><span class="line">　|– 进程上下文，不可以睡眠　　　　GFP_ATOMIC</span><br><span class="line">　|　　|– 中断处理程序　　　　　　　GFP_ATOMIC</span><br><span class="line">　|　　|– 软中断　　　　　　　　　　GFP_ATOMIC</span><br><span class="line">　|　　|– Tasklet　　　　　　　　　GFP_ATOMIC</span><br><span class="line">　|– 用于DMA的内存，可以睡眠　　　GFP_DMA | GFP_KERNEL</span><br><span class="line">　|– 用于DMA的内存，不可以睡眠　　GFP_DMA |GFP_ATOMIC</span><br><span class="line">    </span><br><span class="line"> <span class="comment">// kfree()</span></span><br><span class="line">    <span class="type">void</span> <span class="title function_">kfree</span><span class="params">(<span class="type">const</span> <span class="type">void</span> *objp)</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// kzalloc()     kzalloc() 对应的内存释放函数也是 kfree()</span></span><br><span class="line">	kzalloc() 函数与 kmalloc() 非常相似，参数及返回值是一样的，可以说是前者是后者的一个变种，因为 kzalloc() 实际上只是额外附加了 __GFP_ZERO 标志。所以它除了申请内核内存外，还会对申请到的内存内容清零。</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Barret</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2021/05/03/Linux/Linux%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/Linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Linux%E7%8E%AF%E5%A2%83%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86(%E4%BA%94)/">http://example.com/2021/05/03/Linux/Linux%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/Linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Linux%E7%8E%AF%E5%A2%83%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86(%E4%BA%94)/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">Barret Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/05/03/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E5%A4%9A%E6%80%81%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/"><img class="prev-cover" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">多态实现原理</div></div></a></div><div class="next-post pull-right"><a href="/2021/05/03/Linux/Linux%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/Linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Linux%E7%8E%AF%E5%A2%83%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86(%E5%9B%9B)/"><img class="next-cover" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Linux环境内存管理(四)</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F14206928472%2F1000.jpg&amp;refer=http%3A%2F%2Finews.gtimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650157497&amp;t=70dfbdc4919a4e744f090628aaf5059d" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Barret</div><div class="author-info__description">Welcome Visit</div></div><div class="card-info-data is-center"><div class="card-info-data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a></div><div class="card-info-data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a></div><div class="card-info-data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/anyeyueren" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:2412704562@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="toc-number">1.</span> <span class="toc-text">内存分配</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E7%A9%BA%E9%97%B4%E5%86%85%E5%AD%98%E5%88%86%E9%85%8Dmalloc"><span class="toc-number">1.1.</span> <span class="toc-text">用户空间内存分配malloc</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#brk%E5%92%8Csbrk"><span class="toc-number">1.1.1.</span> <span class="toc-text">brk和sbrk</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mmap%E5%87%BD%E6%95%B0"><span class="toc-number">1.1.2.</span> <span class="toc-text">mmap函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#malloc%E5%87%BD%E6%95%B0%E7%9A%84chunk%E6%9C%BA%E5%88%B6"><span class="toc-number">1.1.3.</span> <span class="toc-text">malloc函数的chunk机制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#top-chunk"><span class="toc-number">1.1.3.1.</span> <span class="toc-text">top chunk</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#chunk%E7%BB%93%E6%9E%84"><span class="toc-number">1.1.3.2.</span> <span class="toc-text">chunk结构</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#kmalloc%E5%92%8Cvmalloc"><span class="toc-number">1.2.</span> <span class="toc-text">kmalloc和vmalloc</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%B8%83)/" title="进程同步和信号量"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="进程同步和信号量"/></a><div class="content"><a class="title" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%B8%83)/" title="进程同步和信号量">进程同步和信号量</a><time datetime="2021-11-24T22:04:16.000Z" title="发表于 2021-11-25 06:04:16">2021-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/" title="信号量临界区保护"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="信号量临界区保护"/></a><div class="content"><a class="title" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/" title="信号量临界区保护">信号量临界区保护</a><time datetime="2021-11-24T22:04:16.000Z" title="发表于 2021-11-25 06:04:16">2021-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/29/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AD)/" title="CPU调度策略"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CPU调度策略"/></a><div class="content"><a class="title" href="/2021/10/29/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AD)/" title="CPU调度策略">CPU调度策略</a><time datetime="2021-10-28T22:04:16.000Z" title="发表于 2021-10-29 06:04:16">2021-10-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/" title="内核级线程"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="内核级线程"/></a><div class="content"><a class="title" href="/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/" title="内核级线程">内核级线程</a><time datetime="2021-10-24T22:04:16.000Z" title="发表于 2021-10-25 06:04:16">2021-10-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/17/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" title="智能指针"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="智能指针"/></a><div class="content"><a class="title" href="/2021/10/17/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" title="智能指针">智能指针</a><time datetime="2021-10-16T22:04:16.000Z" title="发表于 2021-10-17 06:04:16">2021-10-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By Barret</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>const限定符 | Barret Blog</title><meta name="keywords" content="IT"><meta name="author" content="Barret"><meta name="copyright" content="Barret"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="const限定符​    在编程过程中经常希望定义一种变量，其数值不会轻易被修改，这时就可以用const关键字进行限制,，onst 是 constant 的缩写。一旦一个变量被const加以限定，那么任何试图改变该变量数值的行为都将引发错误。 ​    因为const对象一旦创建后其数值就不能再改变了，所以const对象必须初始化。 ​    与非const类型所能参与的操作相比，const类型的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="const限定符">
+<meta property="og:url" content="http://example.com/2021/07/11/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/const%E9%99%90%E5%AE%9A%E7%AC%A6/index.html">
+<meta property="og:site_name" content="Barret Blog">
+<meta property="og:description" content="const限定符​    在编程过程中经常希望定义一种变量，其数值不会轻易被修改，这时就可以用const关键字进行限制,，onst 是 constant 的缩写。一旦一个变量被const加以限定，那么任何试图改变该变量数值的行为都将引发错误。 ​    因为const对象一旦创建后其数值就不能再改变了，所以const对象必须初始化。 ​    与非const类型所能参与的操作相比，const类型的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650272949&t=18f99d2e597ef4e5080a0e7cdc68b6e1">
+<meta property="article:published_time" content="2021-07-11T01:04:16.000Z">
+<meta property="article:modified_time" content="2021-07-17T14:50:10.237Z">
+<meta property="article:author" content="Barret">
+<meta property="article:tag" content="IT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650272949&t=18f99d2e597ef4e5080a0e7cdc68b6e1"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2021/07/11/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/const%E9%99%90%E5%AE%9A%E7%AC%A6/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":50},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'const限定符',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-07-17 22:50:10'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.0.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F14206928472%2F1000.jpg&amp;refer=http%3A%2F%2Finews.gtimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650157497&amp;t=70dfbdc4919a4e744f090628aaf5059d" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><div class="data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a></div><div class="data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a></div><div class="data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Barret Blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">const限定符</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-07-11T01:04:16.000Z" title="发表于 2021-07-11 09:04:16">2021-07-11</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-07-17T14:50:10.237Z" title="更新于 2021-07-17 22:50:10">2021-07-17</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="const限定符"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="const限定符"><a href="#const限定符" class="headerlink" title="const限定符"></a>const限定符</h1><p>​    在编程过程中经常希望定义一种变量，其数值不会轻易被修改，这时就可以用const关键字进行限制,，onst 是 constant 的缩写。一旦一个变量被const加以限定，那么任何试图改变该变量数值的行为都将引发错误。</p>
+<p>​    因为const对象一旦创建后其数值就不能再改变了，所以const对象必须初始化。</p>
+<p>​    与非const类型所能参与的操作相比，const类型的对象所能完成其中大部分，主要限制只能在const类型对象执行不改变其内容的操作。</p>
+<hr>
+<h2 id="const含义"><a href="#const含义" class="headerlink" title="const含义"></a>const含义</h2><p>​    说 const 定义的是变量，但又相当于常量；说它定义的是常量，但又有变量的属性，所以叫常变量。const与变量类型(int)是可以互换的，两个语句是等价的。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//常整型数</span></span><br><span class="line"><span class="comment">//下面这两种表达形式是一样的</span></span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> a = <span class="number">10</span>;</span><br><span class="line">    <span class="type">int</span>  <span class="type">const</span> a = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//用 const 定义的变量的值是不允许改变的，即不允许给它重新赋值，即使是赋相同的值也不可以</span></span><br><span class="line">    a = <span class="number">10</span>;    <span class="comment">//报错，即使是相同的值依然不可以</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="const生命周期"><a href="#const生命周期" class="headerlink" title="const生命周期"></a>const生命周期</h3><p>​    用 const 修饰的变量，<strong>无论是全局变量还是局部变量，生存周期都是程序运行的整个过程</strong>。</p>
+<p>​    全局变量的生存周期为程序运行的整个过程这个是理所当然的，全局变量是静态的，静态的生存周期就是程序运行的整个过程。而使用 <strong>const 修饰过的局部变量就有了静态特性</strong>，它的生存周期也是程序运行的整个过程。</p>
+<blockquote>
+<p>主要注意的是：局部变量用const修饰之后，并没有说它变成了静态变量，仅仅是有了静态属性。所以编译器在编译过程中把用到该变量的地方都进行替换，换成对应的值。</p>
+<p>我们知道，局部变量存储在栈中，<strong>静态变量存储在静态存储区</strong>中，而<strong>经过 const 修饰过的变量存储在内存中的“只读数据段”中</strong>。只读数据段中存放着常量和只读变量等不可修改的量。</p>
+</blockquote>
+<p>​    多文件享const对象时，需要这样定义： extern  const   int  a &#x3D; 10;</p>
+<blockquote>
+<p>另外，默认情况下，const对象仅在文件内有效，如果想在多个文件之间共享const对象，必须在变量的定义之前添加extern关键字。</p>
+</blockquote>
+<hr>
+<h3 id="const与指针"><a href="#const与指针" class="headerlink" title="const与指针"></a>const与指针</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//指向常量的指针(注意也可以指向普通变量，但是无法通过此指针修改)</span></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> * pOne;    <span class="comment">//指向整形常量的指针，它指向的值不能修改</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//常量指针(必须初始化)</span></span><br><span class="line"><span class="type">int</span> * <span class="type">const</span> pTwo;    <span class="comment">//指向整形的常量指针 ，它不能在指向别的变量，但指向（变量）的值可以修改。 </span></span><br><span class="line"></span><br><span class="line"><span class="comment">//指向常量对象的常量指针</span></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> *<span class="type">const</span> pThree;  <span class="comment">//指向整形常量 的常量指针 。它既不能再指向别的常量，指向的值也不能修改。</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//举例说明</span></span><br><span class="line"><span class="comment">//指针所指向的内存空间不可被修改</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">operatTeacher</span><span class="params">( <span class="type">const</span> Teacher *pT )</span></span><br><span class="line">&#123;</span><br><span class="line">	pT-&gt;age = <span class="number">10</span> ;       <span class="comment">//错误，这是在修改指针所指向的内存空间</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//指针变量本身不可以被修改</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">operatTeacher</span><span class="params">(Teacher * <span class="type">const</span>  pT)</span></span><br><span class="line">&#123;</span><br><span class="line">	pT-&gt;age = <span class="number">10</span> ; </span><br><span class="line">	pT = <span class="literal">NULL</span>;           <span class="comment">//错误</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    理解这些声明的技巧在于，查看关键字const右边来确定什么被声明为常量 ，如果该关键字的右边是类型，则值是常量；如果关键字的右边是指针变量，则指针本身是常量。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1. 指向常量的指针不能用于改变其所指对象的数值，只能用指向常量的指针存放常量的地址</span></span><br><span class="line"><span class="type">const</span> <span class="type">double</span> pi = <span class="number">3.14</span>;</span><br><span class="line"><span class="type">double</span> *ptr = &amp;pi;     <span class="comment">//错误：ptr是一个普通指针</span></span><br><span class="line"><span class="type">const</span> <span class="type">double</span> *cptr = &amp;pi;   <span class="comment">//正确：cptr可以指向一个双精度常量</span></span><br><span class="line">*cptr = <span class="number">42</span>;         <span class="comment">//错误：不能给*cptr赋值</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 指向常量的指针可以指向普通变量，但是无法通过常量指针修改这个数值，但是可以通过其他途径修改</span></span><br><span class="line"><span class="type">int</span> a = <span class="number">10</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> * p = &amp;a;</span><br><span class="line">a = <span class="number">11</span>;     <span class="comment">//正确</span></span><br><span class="line">*p = <span class="number">12</span>;    <span class="comment">//错误，无法修改</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 常量指针必须初始化</span></span><br><span class="line"><span class="type">int</span> a = <span class="number">12</span>;</span><br><span class="line"><span class="type">int</span> * <span class="type">const</span> ptr = &amp;a;   <span class="comment">//ptr只能指向a不可再修改</span></span><br><span class="line">*ptr  = <span class="number">13</span>;   <span class="comment">//ptr指向不能修改，但是可以通过ptr指针修改所指的数值</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="c中const是“冒牌货”"><a href="#c中const是“冒牌货”" class="headerlink" title="c中const是“冒牌货”"></a>c中const是“冒牌货”</h3> <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">const</span> <span class="type">int</span> a = <span class="number">10</span>;        </span><br><span class="line">	<span class="type">int</span> *p = (<span class="type">int</span>*)&amp;a;        <span class="comment">//取a的地址并赋给p</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;a===&gt;%d\n&quot;</span>, a);</span><br><span class="line">	*p = <span class="number">11</span>;                                      <span class="comment">//间接修改了a的数值</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;a===&gt;%d\n&quot;</span>, a);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;Hello......\n&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    上面的代码中a为常变量是不可以被修改的，但是却可以通过间接修改的方法修改了a的数值。但是相同的代码在C++环境中并没有被改变。为什么会产生这样的现象呢？</p>
+<blockquote>
+<p>C++编译器对const常量的处理是这样的：</p>
+<p>​    当遇到常变量声明时，在符号表中放入常量，符号表中有key和value，key中是常变量名称（例如a），value是对应常量的数(例如10)。程序中的取地址并赋给p，实际上编译器另开辟了一个内存空间，并在此空间内进行修改，并不影响原来a的数值。可知对应两块不同的内存。</p>
+</blockquote>
+<p>​    <strong>C++中的const修饰的，是一个真正的常量，而不是C中变量（只读）</strong>。在const修饰的常量编译期间，就已经确定下来了。</p>
+<p>​    可以总结出下面的内容：</p>
+<blockquote>
+<ul>
+<li>C语言中的const变量：</li>
+</ul>
+<p> <strong>C语言中的const变量是只读变量，有自己的存储空间</strong>；</p>
+<ul>
+<li>C++中的const变量：</li>
+</ul>
+<p> <strong>可能分配存储空间，也可能不分配存储空间</strong>；</p>
+<p> <strong>当const常量为全局，并且需要在其他文件中使用</strong>；</p>
+<p> <strong>当使用&amp;操作符取const常量的地址</strong>；</p>
+</blockquote>
+<hr>
+<h3 id="const和define的异同"><a href="#const和define的异同" class="headerlink" title="const和define的异同"></a>const和define的异同</h3><p>​    宏定义在编译时把所有用到宏定义值的地方用宏定义常量替换。const常量可以看作是一个只读变量，需要指定类型，需要分配内存，有自己的作用域。</p>
+<ul>
+<li><p><strong>编译器处理不同</strong></p>
+<p>​    宏定义(define)是一个“编译时”的概念，在预处理阶段展开（在编译时把所有用到宏定义值的地方用宏定义常量替换），不能对宏定义进行调试，生命周期结束于编译时期；</p>
+<p>​    const常量是一个”运行时“概念，在程序运行使用，类似于一个只读行数据；</p>
+</li>
+<li><p><strong>存储方式不同</strong></p>
+<p>​    宏定义是单纯的文本替换，不会分配内存，存储于程序的代码段中；</p>
+<p>​    const常量需要进行内存分配；</p>
+</li>
+<li><p><strong>类型和安全检查不同</strong></p>
+<p>​    宏定义是字符替换，没有数据类型的区别，同时这种替换没有类型安全检查，可能产生边际效应等错误；</p>
+<p>​    const常量是常量的声明，有类型区别，需要在编译阶段进行类型检查；</p>
+</li>
+<li><p><strong>定义域不同</strong></p>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">f1</span> <span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> N 12</span></span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> n <span class="number">12</span>; </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">f2</span> <span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;N &lt;&lt;<span class="built_in">endl</span>; <span class="comment">//正确，N已经定义过，不受定义域限制</span></span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;n &lt;&lt;<span class="built_in">endl</span>; <span class="comment">//错误，n定义域只在f1函数中</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong>定义后能否取消</strong></p>
+<p>​    宏定义可以通过<code>#undef</code>来使之前的宏定义失效；</p>
+<p>​    const常量定义后将在定义域内永久有效；</p>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">f1</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="meta">#<span class="keyword">define</span> N 12</span></span><br><span class="line">  <span class="type">const</span> <span class="type">int</span> n = <span class="number">12</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="meta">#<span class="keyword">undef</span> N <span class="comment">//取消宏定义后，即使在f1函数中，N也无效了</span></span></span><br><span class="line">  <span class="meta">#<span class="keyword">define</span> N 21<span class="comment">//取消后可以重新定义</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="常量表达式-constexpr"><a href="#常量表达式-constexpr" class="headerlink" title="常量表达式(constexpr)"></a>常量表达式(constexpr)</h1><p>​    首先，常量表达式的概念：<strong>在编译期就可以计算出结果的表达式</strong>。</p>
+<blockquote>
+<p>引入常量表达式的好处：</p>
+<blockquote>
+<ul>
+<li>允许一些计算只在编译时进行一次，而不是每次程序运行时;</li>
+<li>编译器可以进行尺度更大的优化;</li>
+<li>可以用在需求编译期间常量的上下文，例如数组长度等;</li>
+</ul>
+</blockquote>
+</blockquote>
+<hr>
+<h2 id="constexpr修饰变量"><a href="#constexpr修饰变量" class="headerlink" title="constexpr修饰变量"></a>constexpr修饰变量</h2><p>​    const 变量的初始化可以延迟到运行时，而 constexpr 变量必须在编译时进行初始化。所有constexpr对象都是const的，但是不是所有的const对象都是constexpr的。</p>
+<p>​    C++11规定允许将变量声明为constexpr类型以便由编译器来验证变量的值是否是一个常量表达式</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">constexpr <span class="type">int</span> mf = <span class="number">20</span>;      <span class="comment">//20是常量表达式</span></span><br><span class="line">constexpr <span class="type">int</span> limit = mf +<span class="number">1</span>; <span class="comment">//mf +1 是常量表达式</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="constexpr与const本质区别"><a href="#constexpr与const本质区别" class="headerlink" title="constexpr与const本质区别"></a>constexpr与const本质区别</h2><p>​    <strong>const</strong>主要用于表达“<strong>对接口的写权限控制</strong>”，即“对于被const修饰的量名(例如const指针变量)，不得通过它对所指对象作任何修改”。(但是可以通过其他接口修改该对象)。另外，把对象声明为const也为编译器提供了潜在的优化可能。具体来说就是，如果把一个量声明为const，并且没有其他地方对该量作取址运算，那么编译器通常(取决于编译期实现)会用该量的实际常量值直接替换掉代码中所有引用该量的地方，而不用在最终编译结果中生成对该量的存取指令。</p>
+<p>​    <strong>constexpr</strong>的主要功能则是<strong>让更多的运算可以在编译期完成</strong>，并能保证表达式在语义上是类型安全的。(译注：相比之下，C语言中#define只能提供简单的文本替换，而不具任何类型检查能力)。与const相比，被constexpr修饰的对象则强制要求其初始化表达式能够在编译期完成计算。之后所有引用该常量对象的地方，若非必要，一律用计算出来的常量值替换。</p>
+<hr>
+<h1 id="const修饰成员函数"><a href="#const修饰成员函数" class="headerlink" title="const修饰成员函数"></a>const修饰成员函数</h1><p>​    类的成员函数可以通过const修饰，但是const放的位置不同修饰的内容也不一样。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//opVar函数是类中的成员函数</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Test</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="built_in">Test</span>(<span class="type">int</span> a, <span class="type">int</span> b)       <span class="comment">//---&gt; Test(Test *this, int a, int b)</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">this</span>-&gt;a = a;</span><br><span class="line">		<span class="keyword">this</span>-&gt;b = b;	</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="type">const</span> <span class="title">opVar</span><span class="params">(<span class="type">int</span> a,<span class="type">int</span> b)</span></span></span><br><span class="line"><span class="function">	</span>&#123;	</span><br><span class="line">        cout&lt;&lt; <span class="string">&quot;b: &quot;</span> &lt;&lt; <span class="keyword">this</span>-&gt;b &lt;&lt;endl;	</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="type">int</span> a;</span><br><span class="line">	<span class="type">int</span> b;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>​    首先需要清楚const写在哪里并没有关系，都是一样的:</p>
+<p>​             void <strong>const</strong> opVar(int a,int b)    &lt;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&gt;    void opVar(int a,int b)  <strong>const</strong> </p>
+<p>​    然后再思考const修饰的是谁？可知函数有一个隐含的this指针，Test(int  a ,int  b)实际上是Test(*<em>Test <em>this</em></em> ,int  a ,int  b)。所以可以推断出：     </p>
+<p>​    void  opVar(int a, int b)    &lt;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&gt;  opVar(<strong>Test * const this</strong>,int a, int b)</p>
+<p>​    void opVar(int a, int b) <strong>const</strong>   &lt;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&gt;  opVar(<strong>const  Test * const this</strong>, int a, int b)</p>
+<p>​    可以得出结论：</p>
+<blockquote>
+<p>​         const修饰的是this指针所指向的这片内存空间，修饰的是this指针。</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Barret</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2021/07/11/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/const%E9%99%90%E5%AE%9A%E7%AC%A6/">http://example.com/2021/07/11/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/const%E9%99%90%E5%AE%9A%E7%AC%A6/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">Barret Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/07/18/C++/%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD/"><img class="prev-cover" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">运算符重载</div></div></a></div><div class="next-post pull-right"><a href="/2021/07/10/C++/C++%E5%AF%B9C%E7%9A%84%E6%89%A9%E5%B1%95/"><img class="next-cover" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">C与C++</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F14206928472%2F1000.jpg&amp;refer=http%3A%2F%2Finews.gtimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650157497&amp;t=70dfbdc4919a4e744f090628aaf5059d" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Barret</div><div class="author-info__description">Welcome Visit</div></div><div class="card-info-data is-center"><div class="card-info-data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a></div><div class="card-info-data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a></div><div class="card-info-data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/anyeyueren" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:2412704562@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#const%E9%99%90%E5%AE%9A%E7%AC%A6"><span class="toc-number">1.</span> <span class="toc-text">const限定符</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#const%E5%90%AB%E4%B9%89"><span class="toc-number">1.1.</span> <span class="toc-text">const含义</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#const%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="toc-number">1.1.1.</span> <span class="toc-text">const生命周期</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#const%E4%B8%8E%E6%8C%87%E9%92%88"><span class="toc-number">1.1.2.</span> <span class="toc-text">const与指针</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#c%E4%B8%ADconst%E6%98%AF%E2%80%9C%E5%86%92%E7%89%8C%E8%B4%A7%E2%80%9D"><span class="toc-number">1.1.3.</span> <span class="toc-text">c中const是“冒牌货”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#const%E5%92%8Cdefine%E7%9A%84%E5%BC%82%E5%90%8C"><span class="toc-number">1.1.4.</span> <span class="toc-text">const和define的异同</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B8%B8%E9%87%8F%E8%A1%A8%E8%BE%BE%E5%BC%8F-constexpr"><span class="toc-number">2.</span> <span class="toc-text">常量表达式(constexpr)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#constexpr%E4%BF%AE%E9%A5%B0%E5%8F%98%E9%87%8F"><span class="toc-number">2.1.</span> <span class="toc-text">constexpr修饰变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#constexpr%E4%B8%8Econst%E6%9C%AC%E8%B4%A8%E5%8C%BA%E5%88%AB"><span class="toc-number">2.2.</span> <span class="toc-text">constexpr与const本质区别</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#const%E4%BF%AE%E9%A5%B0%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0"><span class="toc-number">3.</span> <span class="toc-text">const修饰成员函数</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%B8%83)/" title="进程同步和信号量"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="进程同步和信号量"/></a><div class="content"><a class="title" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%B8%83)/" title="进程同步和信号量">进程同步和信号量</a><time datetime="2021-11-24T22:04:16.000Z" title="发表于 2021-11-25 06:04:16">2021-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/" title="信号量临界区保护"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="信号量临界区保护"/></a><div class="content"><a class="title" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/" title="信号量临界区保护">信号量临界区保护</a><time datetime="2021-11-24T22:04:16.000Z" title="发表于 2021-11-25 06:04:16">2021-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/29/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AD)/" title="CPU调度策略"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CPU调度策略"/></a><div class="content"><a class="title" href="/2021/10/29/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AD)/" title="CPU调度策略">CPU调度策略</a><time datetime="2021-10-28T22:04:16.000Z" title="发表于 2021-10-29 06:04:16">2021-10-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/" title="内核级线程"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="内核级线程"/></a><div class="content"><a class="title" href="/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/" title="内核级线程">内核级线程</a><time datetime="2021-10-24T22:04:16.000Z" title="发表于 2021-10-25 06:04:16">2021-10-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/17/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" title="智能指针"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="智能指针"/></a><div class="content"><a class="title" href="/2021/10/17/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" title="智能指针">智能指针</a><time datetime="2021-10-16T22:04:16.000Z" title="发表于 2021-10-17 06:04:16">2021-10-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By Barret</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

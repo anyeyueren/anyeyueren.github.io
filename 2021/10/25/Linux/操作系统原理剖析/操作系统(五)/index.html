@@ -1,0 +1,318 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>内核级线程 | Barret Blog</title><meta name="keywords" content="IT"><meta name="author" content="Barret"><meta name="copyright" content="Barret"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="​    在开始的时候想要了解的是进程的切换，进程切换分成了两个部分：切换指令   +  切换资源。切换资源涉及到很多内存管理的知识，后面会详细介绍。切换指令实际上就是切换线程。进程的切换必须在内核中，所以不存在用户级进程和内核级进程的说法。所以进程切换切的是内核级线程。  内核级线程​    一个系统中通常用户级线程、核心级线程和进程都有，此时操作系统才能灵活运行，发挥最高价值。 多CPU与多核">
+<meta property="og:type" content="article">
+<meta property="og:title" content="内核级线程">
+<meta property="og:url" content="http://example.com/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/index.html">
+<meta property="og:site_name" content="Barret Blog">
+<meta property="og:description" content="​    在开始的时候想要了解的是进程的切换，进程切换分成了两个部分：切换指令   +  切换资源。切换资源涉及到很多内存管理的知识，后面会详细介绍。切换指令实际上就是切换线程。进程的切换必须在内核中，所以不存在用户级进程和内核级进程的说法。所以进程切换切的是内核级线程。  内核级线程​    一个系统中通常用户级线程、核心级线程和进程都有，此时操作系统才能灵活运行，发挥最高价值。 多CPU与多核">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650272949&t=18f99d2e597ef4e5080a0e7cdc68b6e1">
+<meta property="article:published_time" content="2021-10-24T22:04:16.000Z">
+<meta property="article:modified_time" content="2022-03-23T06:58:34.662Z">
+<meta property="article:author" content="Barret">
+<meta property="article:tag" content="IT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650272949&t=18f99d2e597ef4e5080a0e7cdc68b6e1"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":50},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '内核级线程',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-03-23 14:58:34'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.0.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F14206928472%2F1000.jpg&amp;refer=http%3A%2F%2Finews.gtimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650157497&amp;t=70dfbdc4919a4e744f090628aaf5059d" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><div class="data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a></div><div class="data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a></div><div class="data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Barret Blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">内核级线程</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-10-24T22:04:16.000Z" title="发表于 2021-10-25 06:04:16">2021-10-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-03-23T06:58:34.662Z" title="更新于 2022-03-23 14:58:34">2022-03-23</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="内核级线程"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>​    在开始的时候想要了解的是进程的切换，进程切换分成了两个部分：<em><strong>切换指令   +  切换资源</strong></em>。切换资源涉及到很多内存管理的知识，后面会详细介绍。切换指令实际上就是切换线程。进程的切换必须在内核中，所以不存在用户级进程和内核级进程的说法。所以进程切换切的是内核级线程。</p>
+<hr>
+<h1 id="内核级线程"><a href="#内核级线程" class="headerlink" title="内核级线程"></a>内核级线程</h1><p>​    一个系统中通常用户级线程、核心级线程和进程都有，此时操作系统才能灵活运行，发挥最高价值。</p>
+<h2 id="多CPU与多核"><a href="#多CPU与多核" class="headerlink" title="多CPU与多核"></a>多CPU与多核</h2><p>​                              <img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200310183717482-215251523.png" alt="img" style="zoom:67%;" /></p>
+<p>​    现在的计算机都是多核的，但是如果计算机的操作系统不支持多核线程，那么这个多核没有意义！要想发挥多核的最高价值操作系统就必须支持内核级线程。</p>
+<p>​    从图中可以看出来多处理器有多个CPU，但是每个CPU都有自己的缓存和内存映射MMU。但是多核用的是同一套，多个执行序列用同一套映射这就是多线程。</p>
+<p>​    只有在内核中才能将一个线程分配给一个CPU，即一个核。这种多个CPU执行多个线程时不是并发（同时触发交替执行），而是叫<strong>并行</strong>。在同一个时刻多个CPU同时工作执行多个线程。（用户级线程操作系统看不到无法感知，那么就无法给用户级线程安排多核进行处理！）</p>
+<hr>
+<h2 id="核心级线程实现"><a href="#核心级线程实现" class="headerlink" title="核心级线程实现"></a>核心级线程实现</h2><blockquote>
+<p>对于核心级线程：</p>
+<p>​                      <strong>ThreadCreate</strong>是系统调用，<strong>内核管理TCB</strong>，<strong>内核负责切换线程</strong>。</p>
+</blockquote>
+<p>​    一段程序在用户态执行用的是用户栈，当调用了系统调用之后就会陷入到内核当中，当内核中也要进行函数调用，此时需要的是内核栈。<strong>要使用核心级线程就必须机既在用户栈跑，也在内核栈跑</strong>。（用户级线程只需要用户栈）</p>
+<p>​    换言之，<strong>核心级线程涉及到一套调用栈：用户栈 + 内核栈</strong>。所以在内核中切换内核线程切换TCB时需要切换这一套栈，即内核栈切换时用户栈要跟着切。</p>
+<hr>
+<h3 id="用户栈和内核栈"><a href="#用户栈和内核栈" class="headerlink" title="用户栈和内核栈"></a>用户栈和内核栈</h3><p>​<img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200310183759928-1496068826.png" alt="img" style="zoom: 67%;" />                                                     </p>
+<p>​    开始在用户态的时候使用用户栈，一旦INIT指令执行，操作系统找到与整个用户栈对应的内核栈。找到内核栈之后还会压入一些信息。通过这些信息使得内核栈与用户栈绑定在一起。图中INT表示中断，IRET表示中断返回。</p>
+<blockquote>
+<p><strong>源SS和源SP</strong>分别对应用户栈的栈基址和栈偏移地址，记录了用户栈的信息。</p>
+<p><strong>源PC和CS</strong>记录的信息是在用户态执行到的地方。</p>
+<p><strong>EFLAGS寄存器</strong>：状态标记寄存器。</p>
+</blockquote>
+<hr>
+<p>​    通过下面这个伪代码例子分析内核线程切换过程：</p>
+<p>​    从代码中可以看出来read()函数之前都是用户程序，read()函数以下全是内核程序。在执行read的时候就执行INT 0x80，进入内核。从A函数开始执行，执行到B时将104压栈，执行B函数中read的时候将204压栈，接着进入内核……</p>
+<p>​    在内核栈中先压入用户栈的SS和SP，在压入EFLAGS，压入IP信息，中断完后执行的是304，所以压入304。CS是段基址，故执行100的位置……注意中断返回后，CS和IP弹栈，重新跳转到用户空间，在304 的位置继续执行。</p>
+<img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200310183809740-1944575148.png" alt="img" style="zoom: 67%;" />
+
+<hr>
+<h3 id="内核线程切换"><a href="#内核线程切换" class="headerlink" title="内核线程切换"></a>内核线程切换</h3><p>​    在内核中执行到1000，紧接着调用内核中调用函数sys_read()。调用该函数会造成阻塞，此时就会开始内核中切换：switch_to()。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">  sys_read()</span><br><span class="line">&#123;</span><br><span class="line">    启动磁盘读;</span><br><span class="line">    将自己变成阻塞;</span><br><span class="line">    找到next;</span><br><span class="line">    switch_to(cur, next);    // 一旦阻塞线程就执行不下去了......此时就需要把资源让出来执行下一个线程</span><br><span class="line">                             // cur和next分别是当前线程和下一个线程的TCB</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    switch_to()从一个线程S切换到另一个线程T。过程是这样的：</p>
+<ul>
+<li><p>**仍然是通过 TCB找到内核栈指针; **</p>
+</li>
+<li><p><strong>然后通过ret切到某个内核程序;</strong></p>
+</li>
+<li><p><strong>最后再用 CS:PC切到用户程序</strong>；</p>
+<p>​      将esp的内容存到当前线程S的TCB中，即cur。然后将 next对应线程（线程T）的TCB中的esp字段数值赋给esp寄存器。这是esp就指向了线程T的内核栈。</p>
+<p>​      接着从switch_to函数的尾部ret，这时就开始弹栈，弹的就是线程T的内核栈，TCB2中记录的也是线程T对应的用户栈。</p>
+</li>
+</ul>
+<img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200310183820344-1536645432.png" alt="img" style="zoom:67%;" />
+
+<p>​    程序在切换后主要的执行任务还是用户态程序，在内核阻塞并且换到后，这个过程只是在内核过了一下，最后执行的还是线程T对应的用户态代码，此时就靠着TCB2的PC和CS信息定位到该线程执行到的位置继续工作。</p>
+<p>​    那么上面TCB中的“？？”、“？？？”和“？？？？”分别是什么含义呢？</p>
+<blockquote>
+<p>？？？:   sys_xxx函数中的某个地方，即sys_read函数的某个地方；</p>
+<p>？？： interrupt之前的某个地方  ；即PC和CS数据可以定位到当前所在的线程用户态代码执行位置。</p>
+<p>？？？？：   应该是一段IRET的代码；</p>
+</blockquote>
+<p>​    注意在线程T一开始创建出来时，”??”填写的是函数C的起始地址，”????”填写的是一段能完成第二级返回的代码，即IRET代码，来保证可以从线程T可以回切到线程S。</p>
+<p>​ <img src="https://cdn.jsdelivr.net/gh/anyeyueren/picgoimg/studyImg/内核线程切换.png" style="zoom:50%;" /></p>
+<p>​    首先线程S通过中断进入到了内核，在内核中调用系统接口发生阻塞就会触发内核线程切换，找到对应TCB后进行TCB的切换，即从TCB1切换到TCB2。</p>
+<p>​    接着根据TCB完成内核栈的切换，切换完毕之后再根据IRET指令完成用户栈的切换。这样完成了一套栈的切换。</p>
+<hr>
+<h3 id="内核切换五段论"><a href="#内核切换五段论" class="headerlink" title="内核切换五段论"></a>内核切换五段论</h3><img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200310183836772-99658922.png" alt="img" style="zoom: 67%;" />
+
+<p>​    如果线程S和线程T在两个不同的进程中，那么需要进行地址映射表的切换，还有内存管理相关代码的处理。</p>
+<hr>
+<h3 id="ThreadCreate实现"><a href="#ThreadCreate实现" class="headerlink" title="ThreadCreate实现"></a>ThreadCreate实现</h3><img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200310183846582-873509529.png" alt="img" style="zoom:67%;" />
+
+<p>​    首先申请一段内存，作为线程的TCB，并进行参数初始化。将用户栈参数传入，TCB关联内核栈和用户栈。一旦发生切换就是TCB切，进而内核栈和用户栈都可以进行切换。内核栈切换就是将esp指向中断出口，在中断退出流程中执行一段代码将该弹出的数据弹出来。内核栈切换后，就通过CS和500定位到切换后的用户栈执行序列的位置开始执行……</p>
+<hr>
+<h2 id="用户线程和核心线程对比"><a href="#用户线程和核心线程对比" class="headerlink" title="用户线程和核心线程对比"></a>用户线程和核心线程对比</h2><img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200310183856580-1134041177.png" alt="img" style="zoom:67%;" />
+
+<hr>
+<h1 id="内核线程实现"><a href="#内核线程实现" class="headerlink" title="内核线程实现"></a>内核线程实现</h1><p>​    再次从宏观角度分析整个流程：线程1的用户态中断后进入内核，线程1的用户栈和内核栈连成一套。在内核中如果发生阻塞就会触发切换，执行Schedule进行切换。</p>
+<p>​    想要调度到另外一个线程，首先需要TCB发生切换，从线程1的进程控制块切换到线程2的线程控制块，TCB中有内核栈的指针，TCB切换好了之后就是内核栈切换到线程2的内核栈。在内核栈中执行一些指令后，通过<strong>IRET</strong>使得用户栈也切到了线程2。</p>
+<blockquote>
+<p>线程1用户栈 —&gt; 线程1内核栈  —&gt; 线程1TCB  &#x3D;&#x3D;&#x3D;&gt; 线程2TCB   —&gt;  线程2内核栈   —-&gt; 线程2用户栈</p>
+</blockquote>
+<img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200310204410311-1736236021.png" alt="img" style="zoom: 67%;" />
+
+<hr>
+<p>​    这里选择fork()系统调用为例进行分析说明。因为fork系统调用进入内核很容易发生切换，而且fork还能创建新的进程。现在从fork这个口子进入一是要掌握线程切换的五段论，还要核心线程创建需要做哪些事情。</p>
+<p>​    下面的程序中，main函数中调用A，A函数中遇到fork()，fork转成汇编后其中“INT 0x80”中断会使其进入内核。将系统调用号“_NR_fork”赋值给eax。需要注意在执行中断INT时，PC指针自动加一指向语句”mov res, %eax”。</p>
+<p>​                                 <img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200310204423077-825203289.png" alt="img" style="zoom:67%;" /></p>
+<p>​    在用户栈中，A函数一旦返回，ret为B函数地址，就执行B函数。B函数执行完就执行返回，继续执行main的ret，即exit。内核栈SS:SP指向用户栈。ret就是中断返回后执行的内容，所以将中断返回的下一行内容压栈。</p>
+<p>​    之前说过中断0x80在上电初始化的时候，操作系统提供了许多系统调用system_call，所以在执行” INT  0x80”时根据系统调用号会定位到fork对应的系统调用。内核栈的栈顶就是中断处理函数，就是操作系统提供的系统调用函数。</p>
+<hr>
+<h2 id="中断入口和出口"><a href="#中断入口和出口" class="headerlink" title="中断入口和出口"></a>中断入口和出口</h2><p>​    切换有五段论，第一段是中断入口，也就是建立用户栈 和内核栈的关联。接下来就进入内核，在内核中执行时有可能执行不下去，比如进行读磁盘是发生阻塞，那么这时候就会进行切换，所以在内核中会判断某个事件引发切换。</p>
+<img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200310204455102-1302015864.png" alt="img" style="zoom:67%;" />
+
+<ol>
+<li>首先又压栈一些用户态的信息；</li>
+<li>接下来就是具体去处理sys_fork，也就是中断要产生的效果，但是在执行sys_fork的时候可能引起切换；</li>
+<li>接下来就是看当前PCB中的state是否等于0，如果不是那么就要进行调度，就是靠schedule，完成五端论中的中间三步；</li>
+<li>看它的时间片是否等于0，时间片用光了也要进行调度；</li>
+<li>最后就是执行中断返回的函数ret_from_sys_call，iret也就是从内核栈到用户栈的切换；</li>
+<li>下图，在ret_from_sys_call中，首先popl一些信息，就是和压栈的信息对应，然后就是iret；</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">//中断入口</span><br><span class="line">// 源码位置： /kernel/sys_call.s中</span><br><span class="line">// 初始化时将各种中断处理设置好</span><br><span class="line">_system_call:</span><br><span class="line">    // 执行sys_fork之前会将一些寄存器内容压栈，注意这还是在进入中断之前！！！所以还是记录用户态的数据</span><br><span class="line">    push %ds..%fs</span><br><span class="line">    pushl %edx...</span><br><span class="line">    call sys_fork     // 调用sys_fork，也就是初始化时那张系统调用表。具体的sys_fork</span><br><span class="line">    pushl %eax        // 调用sys_fork之后时继续向下执行的</span><br><span class="line"></span><br><span class="line">// 时间片用光，状态阻塞都会发生切换</span><br><span class="line">    movl _current,%eax    // 将当前进程置给eax，current是当前PCB结构的地址(全局变量)，state是该结构体中一个成员</span><br><span class="line">    cmpl $0,state(%eax)   // 然后判断PCB的state与0比较，非0表示当前进程阻塞</span><br><span class="line">    jne reschedule             // 如果不为0就会调用调度程序  reschedule完成切换五段论的中间三段</span><br><span class="line">    </span><br><span class="line">    cmpl $0,counter(%eax)   // 然后判断PCB的counter（时间片）与0比较，时间片为0说明时间片已经用光了，也要进行切换</span><br><span class="line">    je reschedule</span><br><span class="line"></span><br><span class="line">ret_from_sys_call:   // 切换完之后会跳到此处，从系统调用返回</span><br><span class="line"></span><br><span class="line">reschedule:</span><br><span class="line">    pushl $ret_from_sys_call      // 将系统调用返回压入栈后再调用_schedule(C语言函数)，执行完遇到&#125;返回就会弹出来</span><br><span class="line">    jmp _schedule                 // </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// 切换程序</span><br><span class="line">void schedule(void)</span><br><span class="line">&#123; </span><br><span class="line">    next=i;</span><br><span class="line">    switch_to(next); </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 中断出口</span><br><span class="line">// 刚才在中断入口会push一堆数据，这边pop一堆数据</span><br><span class="line">ret_from_sys_call:</span><br><span class="line">    popl %eax         //返回值 popl %ebx ...</span><br><span class="line">    pop %fs ...</span><br><span class="line">    iret             //重要，pop完毕数据之后执行iret返回，完成内核切换，进入到切换后线程的用户栈继续执行</span><br></pre></td></tr></table></figure>
+
+<img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200310204512959-1206572582.png" alt="img" style="zoom: 67%;" />
+
+<hr>
+<h2 id="switch-to"><a href="#switch-to" class="headerlink" title="switch_to"></a>switch_to</h2><h3 id="进程切换"><a href="#进程切换" class="headerlink" title="进程切换"></a>进程切换</h3><p>​    为了能够控制进程调度执行，内核必须有能力挂起正在CPU上执行运行的进程，并恢复之前挂起的某个进程，这便是进程的切换。虽然本节将的内容是内核线程切换，但是如果两个线程不是同一个进程，那么也相当于进程切换。注意进程切换只发生在内核态。</p>
+<h3 id="硬件上下文"><a href="#硬件上下文" class="headerlink" title="硬件上下文"></a>硬件上下文</h3><p>​    虽然每个进程都有自己独立的地址空间，但是所有进程都必须<strong>共享CPU寄存器</strong>，所以当一个进程需要挂起时，必须将CPU寄存器数值记录下来，需要恢复继续运行的那个进程所对应的数值需要被装载到CPU寄存器中。</p>
+<p>​    进程恢复执行前必须装入寄存器的一组数据称为<strong>硬件上下文</strong>，但是硬件上下文只是进程恢复执行所需信息的子集。在linux中进程<strong>硬件上下文的一部分存放在TSS段</strong>，而剩余部分存放在<strong>内核态堆栈</strong>中。</p>
+<hr>
+<h3 id="任务状态段-TSS"><a href="#任务状态段-TSS" class="headerlink" title="任务状态段(TSS)"></a>任务状态段(TSS)</h3><p>​    80X86体系包括了一个特殊的类型，叫做任务状态段(Task State Segment，TSS)来存放硬件上下文。“tss_struct”结构描述TSS的格式，init_tss数组为系统上每个不同的CPU存放一个TSS。每次进程切换时，内核都会更新TSS的某些字段来使相应的CPU控制单元可以安全地检索到它需要的信息。</p>
+<hr>
+<h3 id="基于TSS的切换"><a href="#基于TSS的切换" class="headerlink" title="基于TSS的切换"></a>基于TSS的切换</h3><p>​    现在讲解的是使用TSS进行的切换，进一步转变为上面讲解的基于内核栈的切换。先看下现在Linux使用的基于TSS切换。图中原TSS为即将挂起的进程对应的TSS，这里记做pre；将要恢复执行的进程对应的TSS记做next进程对应的TSS。</p>
+<p>​    当触发切换时，会将寄存器中数据信息记录到pre对应的TSS，在恢复执行next之前会将next对应的TSS信息读取到CPU寄存器当中。”ljmp %0\n\t”来完成段的跳转，原TSS对应一个段，新TSS对应一个段，GDT表中有原TSS的描述符指向原TSS段。既然有描述符那么就必定有对应的选择子，选择子就存放在<strong>寄存器TR</strong>中。TR就是用来找到对应的段！</p>
+<p>​    所以”ljmp %0\n\t”来完成段的跳转本质上就是TR寄存器数值的变化！接下来的就需要将新TSS段中内容：EAX、EBX等等若干内容拷贝到CPU寄存器中。这里也有ESP和EBP信息。</p>
+<img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200310204526906-930371439.png" alt="img" style="zoom:67%;" />
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#define switch_to(n)</span><br><span class="line">&#123;struct &#123;long a,b;&#125;</span><br><span class="line">__asm__(</span><br><span class="line">&quot;movw %%dx,%1\n\t&quot;      // </span><br><span class="line">&quot;ljmp %0\n\t&quot;           // ljmp是一个长跳转指令，把指令码中的目标地址addr16装入程序计数器PC，</span><br><span class="line">                        // 使机器执行下一条指令时无条件转移到addr16处执行程序，不影响任何标志,</span><br><span class="line">                        // 此处的长跳转指令完成的动作是跳转segment</span><br><span class="line">::&quot;m&quot;(*&amp;__tmp.a),</span><br><span class="line">&quot;m&quot;(*&amp;__tmp.b),</span><br><span class="line">&quot;d&quot;(_TSS(n))            // _TSS(n)取出对应进程n的TSS段寄存器选择子信息，即下一个进程n的CS</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>关于schedule</strong></p>
+<ol>
+<li>调度的话首先要找下一个线程，这个在后面讲调度的时候详细说;</li>
+<li>switch_to里面完成切换;</li>
+<li>把当前cpu中的所有指令放在当前TR指向的段中，也就是把当前执行的信息拍下来放到原tss中;</li>
+<li>开始执行长跳转指令;</li>
+<li>把TSS(n)指给TR，也就是把新tss里的信息扣到cpu上;</li>
+</ol>
+</blockquote>
+<hr>
+<h2 id="ThreadCreate"><a href="#ThreadCreate" class="headerlink" title="ThreadCreate"></a>ThreadCreate</h2><p>​    从sys_fork开始CreateThread 。在进入内核的时候，在内核中压入了一堆东西，这些信息记录了再用户态中执行情况，这些信息需要传递给copy_process。一个C函数在执行的时候参数就是从栈中取出来，现在在内核中所以对应内核栈，将内核栈中记录的用户态信息当做函数入参全部传入，有了这些参数就知道父进程的情况了！！！然后就能copy出来一个一模一样的子进程。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">_sys_fork:</span><br><span class="line">    push %gs; pushl %esi</span><br><span class="line">    ...</span><br><span class="line">    pushl %eax       </span><br><span class="line">    call _copy_process</span><br><span class="line">    addl $<span class="number">20</span>,%esp</span><br><span class="line">    ret</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">copy_process</span><span class="params">(<span class="type">int</span> nr,<span class="type">long</span> ebp,<span class="type">long</span> edi,<span class="type">long</span> esi,<span class="type">long</span> gs,<span class="type">long</span> none,<span class="type">long</span> ebx,<span class="type">long</span> ecx,<span class="type">long</span> edx, <span class="type">long</span> fs,<span class="type">long</span> es,<span class="type">long</span> ds,<span class="type">long</span> eip,<span class="type">long</span> cs,<span class="type">long</span> eflags,<span class="type">long</span> esp,<span class="type">long</span> ss)</span>   <span class="comment">// 越靠后面的在栈底部</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="copy-process细节"><a href="#copy-process细节" class="headerlink" title="copy_process细节"></a>copy_process细节</h3><img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200310205323133-1693700695.png" alt="img" style="zoom:67%;" />
+
+<ol>
+<li>申请内存空间，注意这是在内核中，用get_free_page()，而不是malloc，这一页内容就是用来作为PCB；</li>
+<li>接下来设置TSS，esp就是内核栈，ecp就是用户栈，PAGE_SIZE是4K；</li>
+<li>0x10是内核数据段，所以P ~ esp0之间是PCB，再往上就是内核栈；</li>
+<li>接着设置用户栈，ss和esp就是入参，就是父进程传递下来的内容，所以这里是创建用户栈，而且是和父进程一样的栈；</li>
+<li>现在用TSS来代替了填写两个stack的操作，所以“l填写两个stack”不需要；</li>
+</ol>
+<img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200310205326810-409486499.png" alt="img" style="zoom: 67%;" />
+
+<hr>
+<h2 id="执行新任务"><a href="#执行新任务" class="headerlink" title="执行新任务"></a>执行新任务</h2><p>​    创建出来的新的子进程想要执行新的代码，应该如何做呢？exec函数提供了一个在进程中启动另一个程序执行的方法。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">int main(int argc, char * argv[])</span><br><span class="line">&#123; </span><br><span class="line">    while(1) </span><br><span class="line">    &#123; </span><br><span class="line">       scanf(“%s”, cmd);   // 循环等待输入，执行输入命令</span><br><span class="line">       if(!fork())         // 子进程在创建之初是与父进程执行动作一致的</span><br><span class="line">       &#123;</span><br><span class="line">          exec(cmd);       // 现在子进程执行新的命令</span><br><span class="line">       &#125; wait(0); </span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    在子进程中尚未执行exec，子进程与父进程执行的内容是一样的，exec实际上是替换子进程执行内容。调用exec系统调用进入到内核态，再次从内核态返回后，子进程与父进程执行的再也不是一样的代码，子进程开始执行cmd的代码。例如cmd这里是“ls”指令，那么执行的的内容就是ls对应的entry！</p>
+<p>​    之前说过中断返回后执行的是中断IRET指令，实际上就是找打内核栈中那关键的参数，将栈里面存的eip（即+28位置参数）赋值给真正的寄存器EIP，实际上执行的就是PC，也就是让PC从寄存器EIP的地方开始执行。简而言之就是将需要执行的代码的entry地址作为中断返回的内容，当exec中断返回后就可以让PC执行entry开始执行。</p>
+<img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200310205346165-221009330.png" alt="img" style="zoom:67%;" />
+
+<p>​    在调用_do_execve之前会将压栈，因为_do_execve函数也是有参数的，压入的内容就是这个函数的入参。压入的内容esp是当前栈指针，EIP是偏移，即esp + EIP赋值给eax。EIP数值是0x1C，即28。所以esp加上28就指向了eip，就将eip作为参数传给了_do_execve函数。</p>
+<img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200310205350087-891439339.png" alt="img" style="zoom:67%;" />
+
+<p>​    在函数内部将可执行程序的入口地址entry赋值给eip[0]，完成了上面说的操作。eip[3]实际上对应了内核栈的ESP，将p赋值，因为现在子进程执行自己代码了，也应该有自己的用户栈了。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><img src="https://img2020.cnblogs.com/blog/1212924/202003/1212924-20200310205421778-32583363.png" alt="img" style="zoom:67%;" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Barret</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/">http://example.com/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">Barret Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/10/29/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AD)/"><img class="prev-cover" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">CPU调度策略</div></div></a></div><div class="next-post pull-right"><a href="/2021/10/17/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/"><img class="next-cover" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">智能指针</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F14206928472%2F1000.jpg&amp;refer=http%3A%2F%2Finews.gtimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650157497&amp;t=70dfbdc4919a4e744f090628aaf5059d" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Barret</div><div class="author-info__description">Welcome Visit</div></div><div class="card-info-data is-center"><div class="card-info-data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a></div><div class="card-info-data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a></div><div class="card-info-data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/anyeyueren" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:2412704562@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E7%BA%A7%E7%BA%BF%E7%A8%8B"><span class="toc-number">1.</span> <span class="toc-text">内核级线程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9ACPU%E4%B8%8E%E5%A4%9A%E6%A0%B8"><span class="toc-number">1.1.</span> <span class="toc-text">多CPU与多核</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E7%BA%A7%E7%BA%BF%E7%A8%8B%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.2.</span> <span class="toc-text">核心级线程实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E6%A0%88%E5%92%8C%E5%86%85%E6%A0%B8%E6%A0%88"><span class="toc-number">1.2.1.</span> <span class="toc-text">用户栈和内核栈</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E7%BA%BF%E7%A8%8B%E5%88%87%E6%8D%A2"><span class="toc-number">1.2.2.</span> <span class="toc-text">内核线程切换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E5%88%87%E6%8D%A2%E4%BA%94%E6%AE%B5%E8%AE%BA"><span class="toc-number">1.2.3.</span> <span class="toc-text">内核切换五段论</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ThreadCreate%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.2.4.</span> <span class="toc-text">ThreadCreate实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E7%BA%BF%E7%A8%8B%E5%92%8C%E6%A0%B8%E5%BF%83%E7%BA%BF%E7%A8%8B%E5%AF%B9%E6%AF%94"><span class="toc-number">1.3.</span> <span class="toc-text">用户线程和核心线程对比</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E7%BA%BF%E7%A8%8B%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.</span> <span class="toc-text">内核线程实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E5%85%A5%E5%8F%A3%E5%92%8C%E5%87%BA%E5%8F%A3"><span class="toc-number">2.1.</span> <span class="toc-text">中断入口和出口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#switch-to"><span class="toc-number">2.2.</span> <span class="toc-text">switch_to</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E5%88%87%E6%8D%A2"><span class="toc-number">2.2.1.</span> <span class="toc-text">进程切换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A1%AC%E4%BB%B6%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-number">2.2.2.</span> <span class="toc-text">硬件上下文</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%BB%E5%8A%A1%E7%8A%B6%E6%80%81%E6%AE%B5-TSS"><span class="toc-number">2.2.3.</span> <span class="toc-text">任务状态段(TSS)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8ETSS%E7%9A%84%E5%88%87%E6%8D%A2"><span class="toc-number">2.2.4.</span> <span class="toc-text">基于TSS的切换</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ThreadCreate"><span class="toc-number">2.3.</span> <span class="toc-text">ThreadCreate</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#copy-process%E7%BB%86%E8%8A%82"><span class="toc-number">2.3.1.</span> <span class="toc-text">copy_process细节</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%A7%E8%A1%8C%E6%96%B0%E4%BB%BB%E5%8A%A1"><span class="toc-number">2.4.</span> <span class="toc-text">执行新任务</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%B8%83)/" title="进程同步和信号量"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="进程同步和信号量"/></a><div class="content"><a class="title" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%B8%83)/" title="进程同步和信号量">进程同步和信号量</a><time datetime="2021-11-24T22:04:16.000Z" title="发表于 2021-11-25 06:04:16">2021-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/" title="信号量临界区保护"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="信号量临界区保护"/></a><div class="content"><a class="title" href="/2021/11/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AB)/" title="信号量临界区保护">信号量临界区保护</a><time datetime="2021-11-24T22:04:16.000Z" title="发表于 2021-11-25 06:04:16">2021-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/29/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AD)/" title="CPU调度策略"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CPU调度策略"/></a><div class="content"><a class="title" href="/2021/10/29/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E5%85%AD)/" title="CPU调度策略">CPU调度策略</a><time datetime="2021-10-28T22:04:16.000Z" title="发表于 2021-10-29 06:04:16">2021-10-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/" title="内核级线程"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="内核级线程"/></a><div class="content"><a class="title" href="/2021/10/25/Linux/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F(%E4%BA%94)/" title="内核级线程">内核级线程</a><time datetime="2021-10-24T22:04:16.000Z" title="发表于 2021-10-25 06:04:16">2021-10-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/17/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" title="智能指针"><img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2F06%2F78%2F41%2F067841122a06a611ddcf6a7f1dade3dc.jpg&amp;refer=http%3A%2F%2Fup.enterdesk.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1650272949&amp;t=18f99d2e597ef4e5080a0e7cdc68b6e1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="智能指针"/></a><div class="content"><a class="title" href="/2021/10/17/C++%E6%96%B0%E5%A2%9E%E7%89%B9%E6%80%A7/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" title="智能指针">智能指针</a><time datetime="2021-10-16T22:04:16.000Z" title="发表于 2021-10-17 06:04:16">2021-10-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By Barret</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
